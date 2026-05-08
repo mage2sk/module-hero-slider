@@ -1,0 +1,193 @@
+/*
+ * Panth Hero Slider — framework-agnostic CSS.
+ * Mirrors the loaded.com look without relying on Tailwind utilities,
+ * so it renders identically on Hyva and Luma.
+ */
+
+.panth-hero {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.panth-hero img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 8.83;
+    object-fit: cover;
+}
+
+/* Pre-mount LCP banner: shows the first slide centered on desktop while
+   Splide is still loading. Hidden on mobile + once Splide has mounted. */
+.panth-hero__lcp {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 33.3333%;
+    padding: 1.5rem 0.75rem 0;
+    z-index: 1;
+    pointer-events: none;
+    box-sizing: border-box;
+}
+.panth-hero__lcp .panth-hero__slide {
+    pointer-events: auto;
+    display: block;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+    .panth-hero__lcp { display: none; }
+}
+
+.panth-hero--mounted .panth-hero__lcp {
+    display: none;
+}
+
+/* Slide content */
+.panth-hero__slide {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: 1rem;
+    line-height: 0;
+    text-decoration: none;
+}
+
+.panth-hero__slide-wrap {
+    padding: 1.5rem 0.75rem 0;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+    .panth-hero__slide-wrap {
+        padding: 0;
+    }
+    .panth-hero__slide {
+        border-radius: 0;
+    }
+}
+
+/* CTA button on each slide */
+.panth-hero__btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 20;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1;
+    color: #fff;
+    background: #09090C;
+}
+@media (min-width: 768px) {
+    .panth-hero__btn {
+        top: 2rem;
+        right: 2.5rem;
+        font-size: 0.875rem;
+        padding: 0.55rem 1.25rem;
+    }
+}
+@media (min-width: 1024px) {
+    .panth-hero__btn {
+        font-size: 1rem;
+    }
+}
+
+/* Splide overrides — center-focused 3-up with side peeks via -33% margin trick. */
+.panth-hero.splide .splide__track {
+    overflow: visible;
+}
+@media (min-width: 1025px) {
+    .panth-hero.splide .splide__track {
+        margin-left: -33%;
+        margin-right: -33%;
+    }
+    .panth-hero.splide {
+        overflow: hidden;
+    }
+}
+
+/* Arrows container — absolutely positioned children laid over the slider.
+   `splide-core.min.css` doesn't include arrow styling, so we provide the
+   full positioning + visuals ourselves. */
+.panth-hero .splide__arrows {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 30;
+}
+.panth-hero .splide__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: auto;
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.92);
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    opacity: 1;
+    transition: background 0.15s ease;
+}
+.panth-hero .splide__arrow svg {
+    fill: #1a1a1a;
+    width: 1.25rem;
+    height: 1.25rem;
+    pointer-events: none;
+}
+.panth-hero .splide__arrow:hover {
+    background: #fff;
+}
+.panth-hero .splide__arrow:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+.panth-hero .splide__arrow--prev {
+    left: 1rem;
+}
+.panth-hero .splide__arrow--next {
+    right: 1rem;
+}
+@media (max-width: 1024px) {
+    .panth-hero .splide__arrows { display: none; }
+}
+
+/* Pagination dots: only visible at <=1024px (mobile) */
+.panth-hero .splide__pagination {
+    bottom: -1.5rem;
+}
+.panth-hero .splide__pagination__page {
+    background: #c0c0c0;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin: 0 0.25rem;
+    opacity: 1;
+}
+.panth-hero .splide__pagination__page.is-active {
+    background: #1a1a1a;
+    transform: scale(1.2);
+}
+@media (min-width: 1025px) {
+    .panth-hero .splide__pagination { display: none; }
+}
+
+/* Smooth fade-in once mounted to avoid layout flash */
+.panth-hero:not(.panth-hero--mounted) .splide__track {
+    visibility: hidden;
+}

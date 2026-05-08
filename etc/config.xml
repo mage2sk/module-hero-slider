@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <panth_heroslider>
+            <general>
+                <enabled>1</enabled>
+                <autoplay>1</autoplay>
+                <interval>22000</interval>
+                <per_page>3</per_page>
+                <show_arrows>1</show_arrows>
+                <mobile_breakpoint>1025</mobile_breakpoint>
+                <auto_inject_homepage>1</auto_inject_homepage>
+            </general>
+        </panth_heroslider>
+    </default>
+</config>

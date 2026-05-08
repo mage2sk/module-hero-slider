@@ -1,0 +1,103 @@
+<?php
+/**
+ * Copyright © Panth Infotech. All rights reserved.
+ *
+ * @var \Panth\HeroSlider\Block\Slider $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+if (!$block->isEnabled()) {
+    return;
+}
+
+$sliderId = $block->getSliderId();
+$slides   = $block->getSlides();
+$first    = $slides[0] ?? null;
+?>
+<link rel="stylesheet" href="<?= $escaper->escapeUrl($block->getSplideCssUrl()) ?>">
+<div class="panth-hero" id="<?= $escaper->escapeHtmlAttr($sliderId) ?>" role="region" aria-roledescription="carousel">
+    <?php if ($first): ?>
+        <div class="panth-hero__lcp">
+            <a class="panth-hero__slide" href="<?= $escaper->escapeUrl($block->getLinkUrl($first)) ?>">
+                <span class="panth-hero__btn"
+                      style="background-color: <?= $escaper->escapeHtmlAttr($block->getButtonBg($first)) ?>; color: <?= $escaper->escapeHtmlAttr($block->getButtonColor($first)) ?>;">
+                    <?= $escaper->escapeHtml($block->getButtonLabel($first)) ?>
+                </span>
+                <picture>
+                    <source srcset="<?= $escaper->escapeUrl($block->getMobileSrc($first)) ?>" media="(max-width: 767px)">
+                    <img src="<?= $escaper->escapeUrl($block->getDesktopSrc($first)) ?>"
+                         alt="<?= $escaper->escapeHtmlAttr($block->getAlt($first)) ?>"
+                         width="706" height="390" fetchpriority="high" loading="eager">
+                </picture>
+            </a>
+        </div>
+    <?php endif; ?>
+
+    <div class="splide__track">
+        <ul class="splide__list">
+            <?php foreach ($slides as $slide): ?>
+                <li class="splide__slide panth-hero__slide-wrap">
+                    <a class="panth-hero__slide" href="<?= $escaper->escapeUrl($block->getLinkUrl($slide)) ?>">
+                        <span class="panth-hero__btn"
+                              style="background-color: <?= $escaper->escapeHtmlAttr($block->getButtonBg($slide)) ?>; color: <?= $escaper->escapeHtmlAttr($block->getButtonColor($slide)) ?>;">
+                            <?= $escaper->escapeHtml($block->getButtonLabel($slide)) ?>
+                        </span>
+                        <picture>
+                            <source srcset="<?= $escaper->escapeUrl($block->getMobileSrc($slide)) ?>" media="(max-width: 767px)">
+                            <img src="<?= $escaper->escapeUrl($block->getDesktopSrc($slide)) ?>"
+                                 alt="<?= $escaper->escapeHtmlAttr($block->getAlt($slide)) ?>"
+                                 width="706" height="390" loading="lazy">
+                        </picture>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+</div>
+
+<script>
+    'use strict';
+    (function () {
+        var SLIDER_ID = <?= /* @noEscape */ json_encode($sliderId) ?>;
+        var SPLIDE_CONFIG = <?= /* @noEscape */ $block->getSplideConfigJson() ?>;
+        var SPLIDE_JS_URL = <?= /* @noEscape */ json_encode($block->getSplideJsUrl()) ?>;
+
+        var mountSlider = function () {
+            if (typeof Splide === 'undefined') return;
+            var el = document.getElementById(SLIDER_ID);
+            if (!el) return;
+            // Splide expects the library's "splide" class on the root element.
+            el.classList.add('splide');
+            try {
+                new Splide('#' + SLIDER_ID, SPLIDE_CONFIG).mount();
+                el.classList.add('panth-hero--mounted');
+            } catch (e) {
+                if (window.console && console.warn) console.warn('panth-hero-slider mount failed', e);
+            }
+        };
+
+        var loadSplideAndMount = function () {
+            if (typeof Splide !== 'undefined') {
+                mountSlider();
+                return;
+            }
+            // Reuse a single global load promise so multiple sliders on one
+            // page only fetch the script once.
+            window.__panthHeroSplideLoading = window.__panthHeroSplideLoading || new Promise(function (resolve) {
+                var s = document.createElement('script');
+                s.src = SPLIDE_JS_URL;
+                s.async = true;
+                s.addEventListener('load', resolve);
+                s.addEventListener('error', resolve); // resolve anyway so we don't block forever
+                document.head.appendChild(s);
+            });
+            window.__panthHeroSplideLoading.then(mountSlider);
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadSplideAndMount);
+        } else {
+            loadSplideAndMount();
+        }
+    })();
+</script>

@@ -1,0 +1,41 @@
+{
+    "name": "mage2kishan/module-hero-slider",
+    "description": "Hero / homepage carousel for Magento 2 (Hyva + Luma). Center-focused 3-up Splide.js slider with autoplay, per-slide button styling, and responsive desktop/mobile artwork. Ships its own Splide assets \u2014 no theme dependency.",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": "proprietary",
+    "keywords": [
+        "magento2",
+        "magento2-module",
+        "panth",
+        "hero-slider",
+        "homepage-slider",
+        "carousel",
+        "splide",
+        "hyva",
+        "luma"
+    ],
+    "authors": [
+        {
+            "name": "Kishan Savaliya",
+            "email": "kishansavaliyakb@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "~8.1.0||~8.2.0||~8.3.0||~8.4.0",
+        "magento/framework": "^103.0",
+        "magento/module-backend": "^102.0",
+        "magento/module-cms": "^104.0",
+        "magento/module-store": "^101.0",
+        "magento/module-ui": "^101.0",
+        "mage2kishan/module-core": "^1.0"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Panth\\HeroSlider\\": ""
+        }
+    }
+}

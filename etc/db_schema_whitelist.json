@@ -1,0 +1,25 @@
+{
+    "panth_hero_slider_slide": {
+        "column": {
+            "entity_id": true,
+            "title": true,
+            "link_url": true,
+            "button_label": true,
+            "button_bg_color": true,
+            "button_text_color": true,
+            "image_desktop": true,
+            "image_mobile": true,
+            "image_alt": true,
+            "sort_order": true,
+            "is_active": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "PANTH_HERO_SLIDER_SLIDE_IS_ACTIVE_SORT_ORDER": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

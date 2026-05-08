@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="panth_hero_slider_slide" resource="default" engine="innodb" comment="Panth Hero Slider — slides">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true" comment="Slide ID"/>
+        <column xsi:type="varchar" name="title" nullable="false" length="255" comment="Admin title (not shown on storefront)"/>
+        <column xsi:type="text" name="link_url" nullable="true" comment="Slide click destination (absolute or relative URL)"/>
+        <column xsi:type="varchar" name="button_label" nullable="true" length="64" comment="CTA button label, e.g. SHOP NOW"/>
+        <column xsi:type="varchar" name="button_bg_color" nullable="true" length="16" comment="Button background hex color"/>
+        <column xsi:type="varchar" name="button_text_color" nullable="true" length="16" comment="Button text hex color"/>
+        <column xsi:type="varchar" name="image_desktop" nullable="false" length="255" comment="Desktop image path"/>
+        <column xsi:type="varchar" name="image_mobile" nullable="true" length="255" comment="Mobile image path; falls back to desktop"/>
+        <column xsi:type="varchar" name="image_alt" nullable="true" length="255" comment="Image alt text"/>
+        <column xsi:type="int" name="sort_order" nullable="false" default="0" comment="Display order ascending"/>
+        <column xsi:type="smallint" name="is_active" unsigned="true" nullable="false" default="1" comment="1 = visible on storefront"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <index referenceId="PANTH_HERO_SLIDER_SLIDE_IS_ACTIVE_SORT_ORDER" indexType="btree">
+            <column name="is_active"/>
+            <column name="sort_order"/>
+        </index>
+    </table>
+</schema>

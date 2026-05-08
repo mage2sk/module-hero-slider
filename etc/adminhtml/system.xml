@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="panth" translate="label" sortOrder="200">
+            <label>Panth Infotech</label>
+        </tab>
+        <section id="panth_heroslider" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Hero Slider</label>
+            <tab>panth</tab>
+            <resource>Panth_HeroSlider::config</resource>
+            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Hero Slider</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="autoplay" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Autoplay</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="interval" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Autoplay Interval (ms)</label>
+                    <comment>Time each slide is shown before advancing. Default 22000 (22s) — matches loaded.com.</comment>
+                    <validate>validate-digits validate-zero-or-greater</validate>
+                    <depends>
+                        <field id="autoplay">1</field>
+                    </depends>
+                </field>
+                <field id="per_page" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Slides Per Page (Desktop)</label>
+                    <comment>Number of slides visible at once on desktop. Default 3.</comment>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+                <field id="show_arrows" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Arrows (Desktop)</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="mobile_breakpoint" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Mobile Breakpoint (px)</label>
+                    <comment>Below this width: 1 slide per page with pagination dots, no arrows. Default 1025.</comment>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+                <field id="auto_inject_homepage" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Auto-inject on CMS Home Page</label>
+                    <comment>When enabled, the slider renders inside the home page content container automatically. Disable if you want to place the widget manually.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

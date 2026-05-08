@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Panth\HeroSlider\Api\Data\SlideInterface"
+                type="Panth\HeroSlider\Model\Slide"/>
+    <preference for="Panth\HeroSlider\Api\SlideRepositoryInterface"
+                type="Panth\HeroSlider\Model\SlideRepository"/>
+
+    <virtualType name="Panth\HeroSlider\Model\Slide\ImageUploaderPool"
+                 type="Magento\Framework\View\Element\UiComponent\Argument\InterpreterInterface">
+        <arguments>
+            <argument name="interpreters" xsi:type="array"/>
+        </arguments>
+    </virtualType>
+
+    <type name="Panth\HeroSlider\Model\ImageUploader">
+        <arguments>
+            <argument name="baseTmpPath" xsi:type="string">panth/heroslider/tmp/slide</argument>
+            <argument name="basePath" xsi:type="string">panth/heroslider/slide</argument>
+            <argument name="allowedExtensions" xsi:type="array">
+                <item name="jpg" xsi:type="string">jpg</item>
+                <item name="jpeg" xsi:type="string">jpeg</item>
+                <item name="gif" xsi:type="string">gif</item>
+                <item name="png" xsi:type="string">png</item>
+                <item name="webp" xsi:type="string">webp</item>
+                <item name="svg" xsi:type="string">svg</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="panth_heroslider_slide_listing_data_source" xsi:type="string">
+                    Panth\HeroSlider\Model\ResourceModel\Slide\Grid\Collection
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Panth\HeroSlider\Model\ResourceModel\Slide\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">panth_hero_slider_slide</argument>
+            <argument name="resourceModel" xsi:type="string">Panth\HeroSlider\Model\ResourceModel\Slide</argument>
+        </arguments>
+    </type>
+</config>

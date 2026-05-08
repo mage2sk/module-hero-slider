@@ -1,0 +1,265 @@
+<?xml version="1.0"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_heroslider_slide_form.panth_heroslider_slide_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Hero Slide</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="back" class="Panth\HeroSlider\Block\Adminhtml\Slide\Edit\BackButton"/>
+            <button name="delete" class="Panth\HeroSlider\Block\Adminhtml\Slide\Edit\DeleteButton"/>
+            <button name="save" class="Panth\HeroSlider\Block\Adminhtml\Slide\Edit\SaveButton"/>
+            <button name="save_and_continue" class="Panth\HeroSlider\Block\Adminhtml\Slide\Edit\SaveAndContinueButton"/>
+        </buttons>
+        <namespace>panth_heroslider_slide_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>panth_heroslider_slide_form.panth_heroslider_slide_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_heroslider_slide_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="*/*/save"/>
+        </settings>
+        <dataProvider class="Panth\HeroSlider\Model\Slide\DataProvider" name="panth_heroslider_slide_form_data_source">
+            <settings>
+                <requestFieldName>entity_id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <fieldset name="general">
+        <settings>
+            <label translate="true">Slide</label>
+            <collapsible>false</collapsible>
+        </settings>
+
+        <field name="entity_id" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+                <dataScope>entity_id</dataScope>
+            </settings>
+        </field>
+
+        <field name="title" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Title (admin only)</label>
+                <dataType>text</dataType>
+                <dataScope>title</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+
+        <field name="link_url" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Link URL</label>
+                <notice translate="true">Where the slide leads when clicked. Absolute (https://…) or relative (/path).</notice>
+                <dataType>text</dataType>
+                <dataScope>link_url</dataScope>
+            </settings>
+        </field>
+
+        <field name="is_active" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Active</label>
+                <dataType>boolean</dataType>
+                <dataScope>is_active</dataScope>
+                <default>1</default>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+
+        <field name="sort_order" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Sort Order</label>
+                <notice translate="true">Lower numbers appear first.</notice>
+                <dataType>text</dataType>
+                <dataScope>sort_order</dataScope>
+                <default>0</default>
+                <validation>
+                    <rule name="validate-zero-or-greater" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+    </fieldset>
+
+    <fieldset name="cta">
+        <settings>
+            <label translate="true">Call-to-action button</label>
+            <collapsible>false</collapsible>
+        </settings>
+
+        <field name="button_label" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Button Label</label>
+                <notice translate="true">Defaults to "SHOP NOW" if blank.</notice>
+                <dataType>text</dataType>
+                <dataScope>button_label</dataScope>
+            </settings>
+        </field>
+
+        <field name="button_bg_color" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Button Background Color</label>
+                <notice translate="true">Hex code, e.g. #09090C. Defaults to black if blank.</notice>
+                <dataType>text</dataType>
+                <dataScope>button_bg_color</dataScope>
+            </settings>
+        </field>
+
+        <field name="button_text_color" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Button Text Color</label>
+                <notice translate="true">Hex code, e.g. #FFFFFF. Defaults to white.</notice>
+                <dataType>text</dataType>
+                <dataScope>button_text_color</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+
+    <fieldset name="artwork">
+        <settings>
+            <label translate="true">Artwork</label>
+            <collapsible>false</collapsible>
+        </settings>
+
+        <field name="image_desktop" formElement="fileUploader">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Desktop Image</label>
+                <notice translate="true">Recommended ~ 1280 × 720. JPG, PNG, WebP, SVG.</notice>
+                <dataType>string</dataType>
+                <dataScope>image_desktop</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+            <formElements>
+                <fileUploader>
+                    <settings>
+                        <required>true</required>
+                        <uploaderConfig>
+                            <param xsi:type="url" name="url" path="panth_heroslider/slide/image/upload">
+                                <param name="param">image_desktop</param>
+                            </param>
+                        </uploaderConfig>
+                        <previewTmpl>Magento_Catalog/image-preview</previewTmpl>
+                        <openDialogTitle translate="true">Upload Desktop Image</openDialogTitle>
+                        <maxFileSize>4194304</maxFileSize>
+                        <allowedExtensions>jpg jpeg png gif webp svg</allowedExtensions>
+                    </settings>
+                </fileUploader>
+            </formElements>
+        </field>
+
+        <field name="image_mobile" formElement="fileUploader">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Mobile Image</label>
+                <notice translate="true">Optional. Used below the mobile breakpoint. Falls back to desktop if blank.</notice>
+                <dataType>string</dataType>
+                <dataScope>image_mobile</dataScope>
+            </settings>
+            <formElements>
+                <fileUploader>
+                    <settings>
+                        <required>false</required>
+                        <uploaderConfig>
+                            <param xsi:type="url" name="url" path="panth_heroslider/slide/image/upload">
+                                <param name="param">image_mobile</param>
+                            </param>
+                        </uploaderConfig>
+                        <previewTmpl>Magento_Catalog/image-preview</previewTmpl>
+                        <openDialogTitle translate="true">Upload Mobile Image</openDialogTitle>
+                        <maxFileSize>4194304</maxFileSize>
+                        <allowedExtensions>jpg jpeg png gif webp svg</allowedExtensions>
+                    </settings>
+                </fileUploader>
+            </formElements>
+        </field>
+
+        <field name="image_alt" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Image Alt Text</label>
+                <dataType>text</dataType>
+                <dataScope>image_alt</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+</form>

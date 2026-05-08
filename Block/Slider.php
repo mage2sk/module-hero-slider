@@ -124,8 +124,11 @@ class Slider extends Template
             'pagination' => false,
             'arrows'     => $this->heroConfig->showArrows(),
             'breakpoints' => [
+                // At <= mobile-breakpoint: single full-width slide.
+                // We deliberately omit `focus: 'center'` here — combined with
+                // perPage:1 it nudges the active slide off-centre on mobile
+                // and leaks a sliver of the next slide on the trailing edge.
                 $this->heroConfig->getMobileBreakpoint() => [
-                    'focus'      => 'center',
                     'perPage'    => 1,
                     'pagination' => true,
                     'autoplay'   => $this->heroConfig->isAutoplay(),

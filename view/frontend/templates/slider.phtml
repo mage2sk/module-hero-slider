@@ -63,32 +63,48 @@ $first    = $slides[0] ?? null;
         var SPLIDE_JS_URL = <?= /* @noEscape */ json_encode($block->getSplideJsUrl()) ?>;
 
         var mountSlider = function () {
-            if (typeof Splide === 'undefined') return;
+            if (typeof window.Splide === 'undefined') return;
             var el = document.getElementById(SLIDER_ID);
             if (!el) return;
             // Splide expects the library's "splide" class on the root element.
             el.classList.add('splide');
             try {
-                new Splide('#' + SLIDER_ID, SPLIDE_CONFIG).mount();
+                new window.Splide('#' + SLIDER_ID, SPLIDE_CONFIG).mount();
                 el.classList.add('panth-hero--mounted');
             } catch (e) {
                 if (window.console && console.warn) console.warn('panth-hero-slider mount failed', e);
             }
         };
 
+        // Splide ships as a UMD bundle. When it sees `define.amd` it
+        // registers as an anonymous AMD module — which Magento's RequireJS
+        // rejects with "Mismatched anonymous define()" because we're loading
+        // the script via a `<script>` tag, not via require().
+        // The fix: temporarily hide ONLY `define.amd` (not `define` itself),
+        // forcing the UMD wrapper to take its browser-global branch and
+        // assign `window.Splide`. Other RequireJS modules keep working
+        // because `define` is untouched.
         var loadSplideAndMount = function () {
-            if (typeof Splide !== 'undefined') {
+            if (typeof window.Splide !== 'undefined') {
                 mountSlider();
                 return;
             }
-            // Reuse a single global load promise so multiple sliders on one
-            // page only fetch the script once.
             window.__panthHeroSplideLoading = window.__panthHeroSplideLoading || new Promise(function (resolve) {
+                var hadAmd = !!(window.define && window.define.amd);
+                var savedAmd = hadAmd ? window.define.amd : undefined;
+                if (hadAmd) {
+                    try { window.define.amd = undefined; } catch (e) { /* read-only on some loaders */ }
+                }
+                var restore = function () {
+                    if (hadAmd && window.define) {
+                        try { window.define.amd = savedAmd; } catch (e) { /* ignore */ }
+                    }
+                };
                 var s = document.createElement('script');
                 s.src = SPLIDE_JS_URL;
                 s.async = true;
-                s.addEventListener('load', resolve);
-                s.addEventListener('error', resolve); // resolve anyway so we don't block forever
+                s.addEventListener('load',  function () { restore(); resolve(); });
+                s.addEventListener('error', function () { restore(); resolve(); });
                 document.head.appendChild(s);
             });
             window.__panthHeroSplideLoading.then(mountSlider);

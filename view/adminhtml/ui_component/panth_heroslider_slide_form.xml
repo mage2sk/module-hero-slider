@@ -97,7 +97,6 @@
                 <label translate="true">Active</label>
                 <dataType>boolean</dataType>
                 <dataScope>is_active</dataScope>
-                <default>1</default>
             </settings>
             <formElements>
                 <checkbox>
@@ -123,7 +122,6 @@
                 <notice translate="true">Lower numbers appear first.</notice>
                 <dataType>text</dataType>
                 <dataScope>sort_order</dataScope>
-                <default>0</default>
                 <validation>
                     <rule name="validate-zero-or-greater" xsi:type="boolean">true</rule>
                 </validation>
@@ -206,12 +204,11 @@
                     <settings>
                         <required>true</required>
                         <uploaderConfig>
-                            <param xsi:type="url" name="url" path="panth_heroslider/slide/image/upload">
+                            <param xsi:type="url" name="url" path="panth_heroslider/slide_image/upload">
                                 <param name="param">image_desktop</param>
                             </param>
                         </uploaderConfig>
                         <previewTmpl>Magento_Catalog/image-preview</previewTmpl>
-                        <openDialogTitle translate="true">Upload Desktop Image</openDialogTitle>
                         <maxFileSize>4194304</maxFileSize>
                         <allowedExtensions>jpg jpeg png gif webp svg</allowedExtensions>
                     </settings>
@@ -236,12 +233,11 @@
                     <settings>
                         <required>false</required>
                         <uploaderConfig>
-                            <param xsi:type="url" name="url" path="panth_heroslider/slide/image/upload">
+                            <param xsi:type="url" name="url" path="panth_heroslider/slide_image/upload">
                                 <param name="param">image_mobile</param>
                             </param>
                         </uploaderConfig>
                         <previewTmpl>Magento_Catalog/image-preview</previewTmpl>
-                        <openDialogTitle translate="true">Upload Mobile Image</openDialogTitle>
                         <maxFileSize>4194304</maxFileSize>
                         <allowedExtensions>jpg jpeg png gif webp svg</allowedExtensions>
                     </settings>

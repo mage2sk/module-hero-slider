@@ -113,7 +113,6 @@
         <column name="image_desktop" sortOrder="20" class="Panth\HeroSlider\Ui\Component\Listing\Column\ImagePreview" component="Magento_Ui/js/grid/columns/thumbnail">
             <settings>
                 <hasPreview>1</hasPreview>
-                <addField>true</addField>
                 <altField>title</altField>
                 <label translate="true">Desktop Image</label>
                 <sortable>false</sortable>

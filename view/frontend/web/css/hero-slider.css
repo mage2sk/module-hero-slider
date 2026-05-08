@@ -1,34 +1,73 @@
 /*
- * Panth Hero Slider — framework-agnostic CSS.
- * Mirrors the loaded.com look without relying on Tailwind utilities,
- * so it renders identically on Hyva and Luma.
+ * Panth Hero Slider — framework-agnostic, "next level" CSS.
+ * Renders identically on Hyva (Tailwind) and Luma (no Tailwind) because we
+ * ship our own class system here and never lean on a parent framework.
  */
+
+/* CSS custom properties so a customer site can re-theme without a
+   stylesheet override. Override at `.panth-hero { --… : …; }` if you
+   want to tweak corners / shadow / accent colour, etc. */
+.panth-hero {
+    --panth-hero-radius: 1.5rem;
+    --panth-hero-radius-mobile: 0.75rem;
+    --panth-hero-gap: 0.75rem;
+    --panth-hero-pad-y: 1.75rem;
+    --panth-hero-pad-y-mobile: 0.5rem;
+    --panth-hero-edge-pad-mobile: 0.75rem;
+    --panth-hero-aspect: 16 / 8.83;
+    --panth-hero-aspect-mobile: 16 / 8.83;
+    /* Layered shadow: a tight close one for definition + a larger soft
+       one for elevation, both kept low-opacity so the card lifts off the
+       page without printing a thick grey bar underneath. */
+    --panth-hero-shadow-active:
+        0 2px 6px rgba(0, 0, 0, 0.08),
+        0 12px 28px rgba(0, 0, 0, 0.12);
+    --panth-hero-shadow-peek:
+        0 1px 3px rgba(0, 0, 0, 0.06),
+        0 4px 10px rgba(0, 0, 0, 0.08);
+    --panth-hero-shadow-mobile: none;
+    --panth-hero-bg: transparent;
+    --panth-hero-edge-fade: rgba(255, 255, 255, 0);
+    --panth-hero-arrow-fill: #ffffff;
+    --panth-hero-progress-bg: rgba(255, 255, 255, 0.95);
+    --panth-hero-pagination-bg: rgba(0, 0, 0, 0.22);
+    --panth-hero-pagination-bg-active: #1a1a1a;
+    --panth-hero-autoplay-interval: 22s;
+}
 
 .panth-hero {
     position: relative;
     width: 100%;
     box-sizing: border-box;
     overflow: hidden;
+    background: var(--panth-hero-bg);
+    padding: var(--panth-hero-pad-y) 0;
 }
 
 .panth-hero img {
     display: block;
     width: 100%;
     height: auto;
-    aspect-ratio: 16 / 8.83;
+    aspect-ratio: var(--panth-hero-aspect);
     object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.2, 0.6, 0.2, 1);
+    will-change: transform;
+}
+@media (max-width: 1024px) {
+    .panth-hero img {
+        aspect-ratio: var(--panth-hero-aspect-mobile);
+    }
 }
 
-/* Pre-mount LCP banner: shows the first slide centered on desktop while
-   Splide is still loading. Hidden on mobile + once Splide has mounted. */
+/* Pre-mount LCP banner — first slide centred while Splide is loading. */
 .panth-hero__lcp {
     position: absolute;
-    top: 0;
+    top: var(--panth-hero-pad-y);
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
     max-width: 33.3333%;
-    padding: 1.5rem 0.75rem 0;
+    padding: 0 var(--panth-hero-gap);
     z-index: 1;
     pointer-events: none;
     box-sizing: border-box;
@@ -36,64 +75,133 @@
 .panth-hero__lcp .panth-hero__slide {
     pointer-events: auto;
     display: block;
-    border-radius: 1rem;
+    border-radius: var(--panth-hero-radius);
     overflow: hidden;
+    box-shadow: var(--panth-hero-shadow-active);
 }
-
 @media (max-width: 1024px) {
     .panth-hero__lcp { display: none; }
 }
-
 .panth-hero--mounted .panth-hero__lcp {
     display: none;
 }
 
-/* Slide content */
+/* Each slide is a rounded card. Active centre slide gets full saturation
+   + strong drop-shadow; peeks get knocked back so the centre pops. */
 .panth-hero__slide {
     position: relative;
     display: block;
     overflow: hidden;
-    border-radius: 1rem;
+    border-radius: var(--panth-hero-radius);
     line-height: 0;
     text-decoration: none;
+    box-shadow: var(--panth-hero-shadow-peek);
+    transform: translateZ(0); /* paint own layer for smooth filter transition */
+    transition:
+        box-shadow 0.45s cubic-bezier(0.2, 0.6, 0.2, 1),
+        opacity   0.45s cubic-bezier(0.2, 0.6, 0.2, 1),
+        filter    0.45s cubic-bezier(0.2, 0.6, 0.2, 1),
+        transform 0.45s cubic-bezier(0.2, 0.6, 0.2, 1);
 }
-
 .panth-hero__slide-wrap {
-    padding: 1.5rem 0.75rem 0;
+    padding: 0 var(--panth-hero-gap);
     box-sizing: border-box;
 }
 
-@media (max-width: 1024px) {
-    .panth-hero__slide-wrap {
-        padding: 0;
+/* Desktop — peeks knocked back, centre fully lit. */
+@media (min-width: 1025px) {
+    .panth-hero .splide__slide .panth-hero__slide {
+        opacity: 0.42;
+        filter: brightness(0.65) saturate(0.85);
+        transform: scale(0.97);
     }
-    .panth-hero__slide {
-        border-radius: 0;
+    .panth-hero .splide__slide.is-active .panth-hero__slide {
+        opacity: 1;
+        filter: none;
+        transform: scale(1);
+        box-shadow: var(--panth-hero-shadow-active);
+    }
+    /* Subtle Ken Burns–style image lift on active hover. */
+    .panth-hero .splide__slide.is-active .panth-hero__slide:hover img {
+        transform: scale(1.04);
     }
 }
 
-/* CTA button on each slide */
+/* Mobile — full-bleed slide, no radius, no shadow. Matches the
+   loaded.com mobile pattern: the slide image runs edge-to-edge of the
+   viewport and pagination dots sit BELOW it on the page background. */
+@media (max-width: 1024px) {
+    .panth-hero {
+        padding: 0;
+    }
+    .panth-hero__slide-wrap { padding: 0; }
+    .panth-hero__slide {
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .panth-hero__slide:active {
+        opacity: 0.9;
+        transition: opacity 0.05s ease;
+    }
+    .panth-hero .splide__slide.is-active .panth-hero__slide {
+        box-shadow: none;
+    }
+}
+
+/* Edge fade overlays — soft gradients pinned to the slider's left and right
+   sides that mask the peek edges so they appear to dissolve into the page,
+   instead of showing a hard truncated edge. Pure decoration, no clicks. */
+.panth-hero::before,
+.panth-hero::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 8%;
+    z-index: 25;
+    pointer-events: none;
+}
+.panth-hero::before {
+    left: 0;
+    background: linear-gradient(to right, var(--panth-hero-edge-fade), transparent);
+}
+.panth-hero::after {
+    right: 0;
+    background: linear-gradient(to left, var(--panth-hero-edge-fade), transparent);
+}
+@media (max-width: 1024px) {
+    .panth-hero::before, .panth-hero::after { display: none; }
+}
+
+/* CTA button — pill, modern, hover lift. */
 .panth-hero__btn {
     position: absolute;
     top: 1rem;
     right: 1rem;
     z-index: 20;
-    padding: 0.4rem 1rem;
+    padding: 0.55rem 1.25rem;
     border-radius: 999px;
     font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    font-weight: 700;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     line-height: 1;
     color: #fff;
     background: #09090C;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28), inset 0 0 0 1px rgba(255,255,255,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.panth-hero__slide:hover .panth-hero__btn {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.36), inset 0 0 0 1px rgba(255,255,255,0.14);
+    filter: brightness(1.08);
 }
 @media (min-width: 768px) {
     .panth-hero__btn {
         top: 2rem;
         right: 2.5rem;
         font-size: 0.875rem;
-        padding: 0.55rem 1.25rem;
+        padding: 0.7rem 1.6rem;
     }
 }
 @media (min-width: 1024px) {
@@ -102,7 +210,8 @@
     }
 }
 
-/* Splide overrides — center-focused 3-up with side peeks via -33% margin trick. */
+/* Splide track + the -33% margin trick that makes the centre 33% the
+   visible viewport with the two peeks bleeding off either side. */
 .panth-hero.splide .splide__track {
     overflow: visible;
 }
@@ -116,9 +225,8 @@
     }
 }
 
-/* Arrows container — absolutely positioned children laid over the slider.
-   `splide-core.min.css` doesn't include arrow styling, so we provide the
-   full positioning + visuals ourselves. */
+/* Arrows — large white chevrons sitting on the active-slide boundaries.
+   Hover lifts + intensifies the drop shadow. */
 .panth-hero .splide__arrows {
     position: absolute;
     inset: 0;
@@ -128,66 +236,133 @@
 .panth-hero .splide__arrow {
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
     pointer-events: auto;
     appearance: none;
     border: 0;
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.92);
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: 999px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+    background: transparent;
+    padding: 0.5rem;
+    opacity: 0.95;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
-    opacity: 1;
-    transition: background 0.15s ease;
+    transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.2, 0.6, 0.2, 1), filter 0.2s ease;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.7));
 }
 .panth-hero .splide__arrow svg {
-    fill: #1a1a1a;
-    width: 1.25rem;
-    height: 1.25rem;
+    fill: var(--panth-hero-arrow-fill);
+    width: 4rem;
+    height: 4rem;
     pointer-events: none;
+    transform-origin: center center;
+}
+.panth-hero .splide__arrow--prev svg {
+    transform: scaleX(-1);
 }
 .panth-hero .splide__arrow:hover {
-    background: #fff;
+    opacity: 1;
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.85));
 }
 .panth-hero .splide__arrow:disabled {
-    opacity: 0.4;
+    opacity: 0.3;
     cursor: default;
 }
+/* Each peek slide spans 0%→33.333% (left) and 66.667%→100% (right) of
+   `.panth-hero`. Centring the arrows on those peeks puts them at 16.666%
+   from the respective edge. We translate ±50% on the arrow's own width
+   so its centre lands exactly on that midpoint. */
 .panth-hero .splide__arrow--prev {
-    left: 1rem;
+    left: 16.666%;
+    transform: translate(-50%, -50%);
+}
+.panth-hero .splide__arrow--prev:hover {
+    transform: translate(-55%, -50%);
 }
 .panth-hero .splide__arrow--next {
-    right: 1rem;
+    right: 16.666%;
+    transform: translate(50%, -50%);
+}
+.panth-hero .splide__arrow--next:hover {
+    transform: translate(55%, -50%);
 }
 @media (max-width: 1024px) {
     .panth-hero .splide__arrows { display: none; }
 }
 
-/* Pagination dots: only visible at <=1024px (mobile) */
+/* Pagination ----------------------------------------------------- */
+
+/* Round-dot pagination, BELOW the slide on mobile. Matches the
+   loaded.com mobile look: simple dots, active one filled, sitting on
+   the page background. Hidden on desktop. */
 .panth-hero .splide__pagination {
-    bottom: -1.5rem;
+    position: relative;
+    inset: auto;
+    gap: 0.5rem;
+    padding: 1rem 0.75rem calc(0.75rem + env(safe-area-inset-bottom));
+    margin: 0;
+    background: transparent;
+    z-index: 22;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.panth-hero .splide__pagination li {
+    /* Invisible 12px padding around each dot for a 44px+ tap target. */
+    padding: 0.75rem 0.4rem;
+    pointer-events: auto;
 }
 .panth-hero .splide__pagination__page {
-    background: #c0c0c0;
     width: 0.5rem;
     height: 0.5rem;
-    margin: 0 0.25rem;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    border-radius: 999px;
+    background: var(--panth-hero-pagination-bg);
     opacity: 1;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.25s ease, opacity 0.25s ease;
 }
 .panth-hero .splide__pagination__page.is-active {
-    background: #1a1a1a;
-    transform: scale(1.2);
+    background: var(--panth-hero-pagination-bg-active);
+    transform: none;
 }
 @media (min-width: 1025px) {
     .panth-hero .splide__pagination { display: none; }
 }
 
-/* Smooth fade-in once mounted to avoid layout flash */
+/* Polish — fade in the whole slider once Splide has mounted to avoid the
+   pre-mount layout flash. */
 .panth-hero:not(.panth-hero--mounted) .splide__track {
     visibility: hidden;
+}
+.panth-hero {
+    opacity: 0;
+    animation: panth-hero-enter 0.45s ease forwards;
+}
+@keyframes panth-hero-enter {
+    to { opacity: 1; }
+}
+
+/* Reduced-motion accessibility — respect the user's OS-level setting.
+   Kills autoplay-progress animation, image lift, and entrance fade so
+   nothing moves unless the user explicitly interacts. */
+@media (prefers-reduced-motion: reduce) {
+    .panth-hero,
+    .panth-hero img,
+    .panth-hero__slide,
+    .panth-hero__btn,
+    .panth-hero .splide__arrow,
+    .panth-hero .splide__pagination__page {
+        animation: none !important;
+        transition: none !important;
+    }
+    .panth-hero .splide__pagination__page.is-active::after {
+        display: none;
+    }
+    .panth-hero {
+        opacity: 1;
+    }
 }

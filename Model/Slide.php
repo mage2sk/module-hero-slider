@@ -16,6 +16,17 @@ class Slide extends AbstractModel implements SlideInterface
         $this->_init(\Panth\HeroSlider\Model\ResourceModel\Slide::class);
     }
 
+    public function getSliderId(): ?int
+    {
+        $v = $this->getData(self::SLIDER_ID);
+        return $v === null || $v === '' ? null : (int)$v;
+    }
+
+    public function setSliderId(?int $sliderId): self
+    {
+        return $this->setData(self::SLIDER_ID, $sliderId);
+    }
+
     public function getTitle(): ?string
     {
         $v = $this->getData(self::TITLE);

@@ -57,6 +57,30 @@
             </settings>
         </field>
 
+        <field name="slider_id" formElement="select" sortOrder="5">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Slider Group</label>
+                <notice translate="true">Choose which slider this slide belongs to.</notice>
+                <dataType>int</dataType>
+                <dataScope>slider_id</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\HeroSlider\Model\Source\SliderOptions"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
         <field name="title" formElement="input">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">

@@ -1,8 +1,38 @@
 <?xml version="1.0"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="panth_hero_slider_slider" resource="default" engine="innodb" comment="Panth Hero Slider — slider groups">
+        <column xsi:type="int" name="slider_id" unsigned="true" nullable="false" identity="true" comment="Slider ID"/>
+        <column xsi:type="varchar" name="identifier" nullable="false" length="64" comment="Unique key used by widgets / layout XML"/>
+        <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Admin label"/>
+        <column xsi:type="smallint" name="is_active" unsigned="true" nullable="false" default="1"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="slider_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_HERO_SLIDER_SLIDER_IDENT">
+            <column name="identifier"/>
+        </constraint>
+    </table>
+    <table name="panth_hero_slider_slider_store" resource="default" engine="innodb" comment="Slider ↔ store-view links">
+        <column xsi:type="int" name="slider_id" unsigned="true" nullable="false"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" comment="0 = All Store Views"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="slider_id"/>
+            <column name="store_id"/>
+        </constraint>
+        <index referenceId="PANTH_HERO_SLIDER_SLIDER_STORE_STORE" indexType="btree">
+            <column name="store_id"/>
+        </index>
+        <constraint xsi:type="foreign" referenceId="PANTH_HERO_SLIDER_SLIDER_STORE_SLIDER"
+                    table="panth_hero_slider_slider_store" column="slider_id"
+                    referenceTable="panth_hero_slider_slider" referenceColumn="slider_id"
+                    onDelete="CASCADE"/>
+    </table>
     <table name="panth_hero_slider_slide" resource="default" engine="innodb" comment="Panth Hero Slider — slides">
         <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true" comment="Slide ID"/>
+        <column xsi:type="int" name="slider_id" unsigned="true" nullable="true" comment="FK panth_hero_slider_slider.slider_id"/>
         <column xsi:type="varchar" name="title" nullable="false" length="255" comment="Admin title (not shown on storefront)"/>
         <column xsi:type="text" name="link_url" nullable="true" comment="Slide click destination (absolute or relative URL)"/>
         <column xsi:type="varchar" name="button_label" nullable="true" length="64" comment="CTA button label, e.g. SHOP NOW"/>
@@ -22,5 +52,42 @@
             <column name="is_active"/>
             <column name="sort_order"/>
         </index>
+        <index referenceId="PANTH_HERO_SLIDER_SLIDE_SLIDER_ID" indexType="btree">
+            <column name="slider_id"/>
+        </index>
+        <constraint xsi:type="foreign" referenceId="PANTH_HERO_SLIDER_SLIDE_SLIDER"
+                    table="panth_hero_slider_slide" column="slider_id"
+                    referenceTable="panth_hero_slider_slider" referenceColumn="slider_id"
+                    onDelete="SET NULL"/>
+    </table>
+    <table name="panth_hero_slider_stat" resource="default" engine="innodb" comment="Panth Hero Slider — daily view/click aggregates">
+        <column xsi:type="int" name="stat_id" unsigned="true" nullable="false" identity="true"/>
+        <column xsi:type="int" name="slide_id" unsigned="true" nullable="false" comment="FK panth_hero_slider_slide.entity_id"/>
+        <column xsi:type="date" name="event_date" nullable="false" comment="UTC date of the bucket"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store view id; 0 for unknown"/>
+        <column xsi:type="varchar" name="event_type" nullable="false" length="8" comment="view | click"/>
+        <column xsi:type="varchar" name="device_type" nullable="false" length="8" comment="desktop | tablet | mobile"/>
+        <column xsi:type="int" name="event_count" unsigned="true" nullable="false" default="0" comment="Bucket counter"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="stat_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_HERO_SLIDER_STAT_BUCKET">
+            <column name="slide_id"/>
+            <column name="event_date"/>
+            <column name="store_id"/>
+            <column name="event_type"/>
+            <column name="device_type"/>
+        </constraint>
+        <index referenceId="PANTH_HERO_SLIDER_STAT_DATE" indexType="btree">
+            <column name="event_date"/>
+        </index>
+        <index referenceId="PANTH_HERO_SLIDER_STAT_SLIDE_DATE" indexType="btree">
+            <column name="slide_id"/>
+            <column name="event_date"/>
+        </index>
+        <constraint xsi:type="foreign" referenceId="PANTH_HERO_SLIDER_STAT_SLIDE"
+                    table="panth_hero_slider_stat" column="slide_id"
+                    referenceTable="panth_hero_slider_slide" referenceColumn="entity_id"
+                    onDelete="CASCADE"/>
     </table>
 </schema>

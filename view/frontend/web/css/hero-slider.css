@@ -127,9 +127,9 @@
     }
 }
 
-/* Mobile — full-bleed slide, no radius, no shadow. Matches the
-   loaded.com mobile pattern: the slide image runs edge-to-edge of the
-   viewport and pagination dots sit BELOW it on the page background. */
+/* Mobile — full-bleed slide, no radius, no shadow. The slide image
+   runs edge-to-edge of the viewport and pagination dots sit BELOW it
+   on the page background. */
 @media (max-width: 1024px) {
     .panth-hero {
         padding: 0;
@@ -291,9 +291,8 @@
 
 /* Pagination ----------------------------------------------------- */
 
-/* Round-dot pagination, BELOW the slide on mobile. Matches the
-   loaded.com mobile look: simple dots, active one filled, sitting on
-   the page background. Hidden on desktop. */
+/* Round-dot pagination, BELOW the slide on mobile. Simple dots, active
+   one filled, sitting on the page background. Hidden on desktop. */
 .panth-hero .splide__pagination {
     position: relative;
     inset: auto;

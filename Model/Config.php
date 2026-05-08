@@ -18,6 +18,8 @@ class Config
     public const XPATH_SHOW_ARROWS          = 'panth_heroslider/general/show_arrows';
     public const XPATH_MOBILE_BREAKPOINT    = 'panth_heroslider/general/mobile_breakpoint';
     public const XPATH_AUTO_INJECT_HOMEPAGE = 'panth_heroslider/general/auto_inject_homepage';
+    public const XPATH_ANALYTICS_ENABLED    = 'panth_heroslider/analytics/enabled';
+    public const XPATH_ANALYTICS_RETENTION  = 'panth_heroslider/analytics/retention_days';
 
     public function __construct(
         private readonly ScopeConfigInterface $scopeConfig
@@ -60,5 +62,16 @@ class Config
     public function isAutoInjectHomepage(): bool
     {
         return (bool)$this->scopeConfig->getValue(self::XPATH_AUTO_INJECT_HOMEPAGE, ScopeInterface::SCOPE_STORE);
+    }
+
+    public function isAnalyticsEnabled(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(self::XPATH_ANALYTICS_ENABLED, ScopeInterface::SCOPE_STORE);
+    }
+
+    public function getAnalyticsRetentionDays(): int
+    {
+        $v = (int)$this->scopeConfig->getValue(self::XPATH_ANALYTICS_RETENTION, ScopeInterface::SCOPE_STORE);
+        return $v > 0 ? $v : 365;
     }
 }

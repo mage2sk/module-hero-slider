@@ -69,6 +69,54 @@ That's all that is needed for the module to register; the slider renders on the 
 | Mobile Breakpoint (px) | `1025` | Below this width: 1 slide + pagination dots, no arrows. |
 | Auto-inject on CMS Home Page | Yes | Disable to place the block manually via layout XML. |
 
+## Sliders, Slides, and Stores
+
+The module is organised in three layers:
+
+1. **Sliders** — top-level group with a unique `identifier` (e.g. `homepage_hero`, `category_promo`). A slider is assigned to one or more **store views**, or to "All Store Views" if it should appear everywhere.
+2. **Slides** — belong to a slider. Each slide has its own artwork, button, link, and sort order.
+3. **Placement** — each slider can be placed on the storefront via:
+   - The CMS widget (any page, any layout handle).
+   - Layout XML (a `before="-"` block in `cms_index_index.xml`, etc.).
+   - The auto-inject toggle on the home page (uses the `homepage_hero` slider by default).
+
+### Managing Sliders
+
+**Content → Panth Infotech → Hero Slider → Manage Sliders**
+
+| Field | Notes |
+| --- | --- |
+| Name | Admin label only. |
+| Identifier | Lowercase letters, digits, hyphen, underscore. Used by widgets + layout XML. |
+| Store Views | Pick "All Store Views" to render on every storefront, or pick specific store views. |
+| Active | Disable to instantly hide the slider on every store. |
+
+### Placing a slider via the CMS widget
+
+1. Open any CMS page or block.
+2. Insert widget → **Panth Hero Slider**.
+3. Type the slider's `identifier` (e.g. `homepage_hero`).
+4. Save the page.
+
+The widget renders inline wherever you placed it.
+
+### Placing a slider via layout XML
+
+```xml
+<referenceContainer name="content">
+    <block class="Panth\HeroSlider\Block\Slider"
+           name="hero.category.promo"
+           template="Panth_HeroSlider::slider.phtml"
+           before="-">
+        <arguments>
+            <argument name="slider_identifier" xsi:type="string">category_promo</argument>
+        </arguments>
+    </block>
+</referenceContainer>
+```
+
+The block renders nothing if the slider is disabled, missing, or has no slides for the current store — safe to leave in place permanently.
+
 ## Managing Slides
 
 **Content → Panth Infotech → Hero Slider → Manage Slides**
@@ -83,6 +131,17 @@ Each slide accepts:
 - **Desktop Image** (required) — JPG, PNG, GIF, WebP, or SVG. Recommended ~ 1280 × 720.
 - **Mobile Image** (optional) — used below the mobile breakpoint, falls back to desktop.
 - **Image Alt Text** — used for both artworks.
+
+## Analytics
+
+Every slide tracks **views and clicks** anonymously per device class (desktop / tablet / mobile). The data shows up in two places:
+
+- **Manage Slides grid** — Views (30d), Clicks (30d), CTR (30d) columns.
+- **Slide edit page** — Performance card with 30-day totals + 7-day comparison + per-device breakdown + 30-day daily timeline.
+
+The tracking endpoint (`POST /panth_heroslider/track/event`) is FPC-safe (no form_key dependency), uses `navigator.sendBeacon` so navigation never blocks, and writes to a single counter table via atomic `INSERT ... ON DUPLICATE KEY UPDATE`. No PII is stored — no IP, no user agent, no session ID.
+
+A daily cron (`23 3 * * *`) prunes rows older than the configured retention window (default 365 days).
 
 ## Manual Placement (when auto-inject is disabled)
 

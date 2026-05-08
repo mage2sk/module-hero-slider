@@ -124,6 +124,14 @@
                 <label translate="true">Title</label>
             </settings>
         </column>
+        <column name="slider_id" sortOrder="32" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options class="Panth\HeroSlider\Model\Source\SliderOptions"/>
+                <label translate="true">Slider Group</label>
+            </settings>
+        </column>
         <column name="link_url" sortOrder="40">
             <settings>
                 <filter>text</filter>
@@ -149,6 +157,39 @@
                 <dataType>select</dataType>
                 <options class="Magento\Config\Model\Config\Source\Yesno"/>
                 <label translate="true">Active</label>
+            </settings>
+        </column>
+        <column name="views_30d" sortOrder="72" class="Panth\HeroSlider\Ui\Component\Listing\Column\StatColumn">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="metric" xsi:type="string">views</item>
+                    <item name="sortable" xsi:type="boolean">false</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Views (30d)</label>
+            </settings>
+        </column>
+        <column name="clicks_30d" sortOrder="74" class="Panth\HeroSlider\Ui\Component\Listing\Column\StatColumn">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="metric" xsi:type="string">clicks</item>
+                    <item name="sortable" xsi:type="boolean">false</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Clicks (30d)</label>
+            </settings>
+        </column>
+        <column name="ctr_30d" sortOrder="76" class="Panth\HeroSlider\Ui\Component\Listing\Column\StatColumn">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="metric" xsi:type="string">ctr</item>
+                    <item name="sortable" xsi:type="boolean">false</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">CTR (30d)</label>
             </settings>
         </column>
         <column name="updated_at" sortOrder="80" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">

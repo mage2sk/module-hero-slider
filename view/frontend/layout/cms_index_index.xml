@@ -7,7 +7,11 @@
                    name="panth.heroslider.home"
                    template="Panth_HeroSlider::slider.phtml"
                    ifconfig="panth_heroslider/general/auto_inject_homepage"
-                   before="-"/>
+                   before="-">
+                <arguments>
+                    <argument name="slider_identifier" xsi:type="string">homepage_hero</argument>
+                </arguments>
+            </block>
         </referenceContainer>
     </body>
 </page>

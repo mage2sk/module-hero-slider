@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_heroslider_slider_form.panth_heroslider_slider_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Hero Slider</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="back" class="Panth\HeroSlider\Block\Adminhtml\Slider\Edit\BackButton"/>
+            <button name="delete" class="Panth\HeroSlider\Block\Adminhtml\Slider\Edit\DeleteButton"/>
+            <button name="save" class="Panth\HeroSlider\Block\Adminhtml\Slider\Edit\SaveButton"/>
+            <button name="save_and_continue" class="Panth\HeroSlider\Block\Adminhtml\Slider\Edit\SaveAndContinueButton"/>
+        </buttons>
+        <namespace>panth_heroslider_slider_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>panth_heroslider_slider_form.panth_heroslider_slider_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_heroslider_slider_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="*/*/save"/>
+        </settings>
+        <dataProvider class="Panth\HeroSlider\Model\Slider\DataProvider" name="panth_heroslider_slider_form_data_source">
+            <settings>
+                <requestFieldName>slider_id</requestFieldName>
+                <primaryFieldName>slider_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <fieldset name="general">
+        <settings>
+            <label translate="true">Slider</label>
+            <collapsible>false</collapsible>
+        </settings>
+
+        <field name="slider_id" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+                <dataScope>slider_id</dataScope>
+            </settings>
+        </field>
+
+        <field name="name" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Name</label>
+                <dataType>text</dataType>
+                <dataScope>name</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+
+        <field name="identifier" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Identifier</label>
+                <notice translate="true">Lowercase letters, digits, hyphen or underscore. Used by widgets and layout XML.</notice>
+                <dataType>text</dataType>
+                <dataScope>identifier</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+
+        <field name="store_ids" formElement="multiselect" sortOrder="40">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Store Views</label>
+                <notice translate="true">Pick "All Store Views" to show this slider on every store, or select specific store views. Leaving this empty hides the slider on every store.</notice>
+                <dataType>multiselect</dataType>
+                <dataScope>store_ids</dataScope>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="Magento\Cms\Ui\Component\Listing\Column\Cms\Options"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+
+        <field name="is_active" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">data</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Active</label>
+                <dataType>boolean</dataType>
+                <dataScope>is_active</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

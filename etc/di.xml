@@ -5,6 +5,10 @@
                 type="Panth\HeroSlider\Model\Slide"/>
     <preference for="Panth\HeroSlider\Api\SlideRepositoryInterface"
                 type="Panth\HeroSlider\Model\SlideRepository"/>
+    <preference for="Panth\HeroSlider\Api\Data\SliderInterface"
+                type="Panth\HeroSlider\Model\Slider"/>
+    <preference for="Panth\HeroSlider\Api\SliderRepositoryInterface"
+                type="Panth\HeroSlider\Model\SliderRepository"/>
 
     <virtualType name="Panth\HeroSlider\Model\Slide\ImageUploaderPool"
                  type="Magento\Framework\View\Element\UiComponent\Argument\InterpreterInterface">
@@ -34,6 +38,9 @@
                 <item name="panth_heroslider_slide_listing_data_source" xsi:type="string">
                     Panth\HeroSlider\Model\ResourceModel\Slide\Grid\Collection
                 </item>
+                <item name="panth_heroslider_slider_listing_data_source" xsi:type="string">
+                    Panth\HeroSlider\Model\ResourceModel\Slider\Grid\Collection
+                </item>
             </argument>
         </arguments>
     </type>
@@ -42,6 +49,13 @@
         <arguments>
             <argument name="mainTable" xsi:type="string">panth_hero_slider_slide</argument>
             <argument name="resourceModel" xsi:type="string">Panth\HeroSlider\Model\ResourceModel\Slide</argument>
+        </arguments>
+    </type>
+
+    <type name="Panth\HeroSlider\Model\ResourceModel\Slider\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">panth_hero_slider_slider</argument>
+            <argument name="resourceModel" xsi:type="string">Panth\HeroSlider\Model\ResourceModel\Slider</argument>
         </arguments>
     </type>
 </config>

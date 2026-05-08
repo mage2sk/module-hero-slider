@@ -13,12 +13,22 @@ if (!$block->isEnabled()) {
 $sliderId = $block->getSliderId();
 $slides   = $block->getSlides();
 $first    = $slides[0] ?? null;
+$tracking = $block->isAnalyticsEnabled();
 ?>
 <link rel="stylesheet" href="<?= $escaper->escapeUrl($block->getSplideCssUrl()) ?>">
-<div class="panth-hero" id="<?= $escaper->escapeHtmlAttr($sliderId) ?>" role="region" aria-roledescription="carousel">
+<script type="application/ld+json"><?= /* @noEscape */ $block->getJsonLdJson() ?></script>
+
+<div class="panth-hero"
+     id="<?= $escaper->escapeHtmlAttr($sliderId) ?>"
+     role="region"
+     aria-roledescription="carousel"
+     aria-label="<?= $escaper->escapeHtmlAttr(__('Featured promotions')) ?>"
+     data-track="<?= $tracking ? '1' : '0' ?>"
+     data-track-url="<?= $escaper->escapeUrl($block->getTrackEndpointUrl()) ?>">
     <?php if ($first): ?>
         <div class="panth-hero__lcp">
-            <a class="panth-hero__slide" href="<?= $escaper->escapeUrl($block->getLinkUrl($first)) ?>">
+            <a class="panth-hero__slide" href="<?= $escaper->escapeUrl($block->getLinkUrl($first)) ?>"
+               aria-label="<?= $escaper->escapeHtmlAttr($block->getAlt($first) ?: $first->getTitle()) ?>">
                 <span class="panth-hero__btn"
                       style="background-color: <?= $escaper->escapeHtmlAttr($block->getButtonBg($first)) ?>; color: <?= $escaper->escapeHtmlAttr($block->getButtonColor($first)) ?>;">
                     <?= $escaper->escapeHtml($block->getButtonLabel($first)) ?>
@@ -27,7 +37,10 @@ $first    = $slides[0] ?? null;
                     <source srcset="<?= $escaper->escapeUrl($block->getMobileSrc($first)) ?>" media="(max-width: 767px)">
                     <img src="<?= $escaper->escapeUrl($block->getDesktopSrc($first)) ?>"
                          alt="<?= $escaper->escapeHtmlAttr($block->getAlt($first)) ?>"
-                         width="706" height="390" fetchpriority="high" loading="eager">
+                         width="706" height="390"
+                         decoding="async"
+                         fetchpriority="high"
+                         loading="eager">
                 </picture>
             </a>
         </div>
@@ -36,8 +49,9 @@ $first    = $slides[0] ?? null;
     <div class="splide__track">
         <ul class="splide__list">
             <?php foreach ($slides as $slide): ?>
-                <li class="splide__slide panth-hero__slide-wrap">
-                    <a class="panth-hero__slide" href="<?= $escaper->escapeUrl($block->getLinkUrl($slide)) ?>">
+                <li class="splide__slide panth-hero__slide-wrap" data-slide-id="<?= (int)$slide->getId() ?>">
+                    <a class="panth-hero__slide" href="<?= $escaper->escapeUrl($block->getLinkUrl($slide)) ?>"
+                       aria-label="<?= $escaper->escapeHtmlAttr($block->getAlt($slide) ?: $slide->getTitle()) ?>">
                         <span class="panth-hero__btn"
                               style="background-color: <?= $escaper->escapeHtmlAttr($block->getButtonBg($slide)) ?>; color: <?= $escaper->escapeHtmlAttr($block->getButtonColor($slide)) ?>;">
                             <?= $escaper->escapeHtml($block->getButtonLabel($slide)) ?>
@@ -46,7 +60,9 @@ $first    = $slides[0] ?? null;
                             <source srcset="<?= $escaper->escapeUrl($block->getMobileSrc($slide)) ?>" media="(max-width: 767px)">
                             <img src="<?= $escaper->escapeUrl($block->getDesktopSrc($slide)) ?>"
                                  alt="<?= $escaper->escapeHtmlAttr($block->getAlt($slide)) ?>"
-                                 width="706" height="390" loading="lazy">
+                                 width="706" height="390"
+                                 decoding="async"
+                                 loading="lazy">
                         </picture>
                     </a>
                 </li>
@@ -58,42 +74,56 @@ $first    = $slides[0] ?? null;
 <script>
     'use strict';
     (function () {
-        var SLIDER_ID = <?= /* @noEscape */ json_encode($sliderId) ?>;
+        var SLIDER_ID    = <?= /* @noEscape */ json_encode($sliderId) ?>;
         var SPLIDE_CONFIG = <?= /* @noEscape */ $block->getSplideConfigJson() ?>;
         var SPLIDE_JS_URL = <?= /* @noEscape */ json_encode($block->getSplideJsUrl()) ?>;
 
+        var rootEl = document.getElementById(SLIDER_ID);
+        if (!rootEl) return;
+
+        // -------- Splide load + mount ---------------------------------
         var mountSlider = function () {
             if (typeof window.Splide === 'undefined') return;
-            var el = document.getElementById(SLIDER_ID);
-            if (!el) return;
-            // Splide expects the library's "splide" class on the root element.
-            el.classList.add('splide');
+            rootEl.classList.add('splide');
             try {
                 new window.Splide('#' + SLIDER_ID, SPLIDE_CONFIG).mount();
-                el.classList.add('panth-hero--mounted');
+                rootEl.classList.add('panth-hero--mounted');
+                wireTracking();
             } catch (e) {
-                if (window.console && console.warn) console.warn('panth-hero-slider mount failed', e);
+                if (window.console && console.warn) console.warn('panth-hero mount failed', e);
             }
         };
 
-        // Splide ships as a UMD bundle. When it sees `define.amd` it
-        // registers as an anonymous AMD module — which Magento's RequireJS
-        // rejects with "Mismatched anonymous define()" because we're loading
-        // the script via a `<script>` tag, not via require().
-        // The fix: temporarily hide ONLY `define.amd` (not `define` itself),
-        // forcing the UMD wrapper to take its browser-global branch and
-        // assign `window.Splide`. Other RequireJS modules keep working
-        // because `define` is untouched.
-        var loadSplideAndMount = function () {
-            if (typeof window.Splide !== 'undefined') {
-                mountSlider();
-                return;
-            }
+        // Splide ships as a UMD bundle whose wrapper calls
+        // `define(['exports'], factory)` when it sees `define.amd`.
+        // That's an *anonymous* define — RequireJS rejects it with
+        // "Mismatched anonymous define()" unless a `require([url], cb)`
+        // is actively waiting for that exact URL.
+        //
+        // Naive workaround: hide `define.amd` while loading Splide so
+        // its UMD takes the browser-global path. That breaks any OTHER
+        // UMD module Magento happens to load at the same moment (jQuery,
+        // knockout, underscore, etc.), each crashing with
+        // "Cannot read properties of undefined".
+        //
+        // Correct fix when RequireJS is present: register Splide as a
+        // *named* AMD module via `require.config({paths})` and load it
+        // via `require([...])`. RequireJS now associates Splide's
+        // anonymous define with that module name — no race, no masking,
+        // no impact on concurrent module loads.
+        //
+        // When RequireJS is absent (e.g. Hyvä storefronts), we fall
+        // through to a plain `<script>` tag.
+        // Fallback path: plain script tag with `define.amd` masked just
+        // for the duration of Splide's load. Only used if the AMD path
+        // failed — by that point all of Magento's other UMD modules
+        // have already initialised, so masking is safe.
+        var fallbackToScriptTag = function () {
             window.__panthHeroSplideLoading = window.__panthHeroSplideLoading || new Promise(function (resolve) {
                 var hadAmd = !!(window.define && window.define.amd);
                 var savedAmd = hadAmd ? window.define.amd : undefined;
                 if (hadAmd) {
-                    try { window.define.amd = undefined; } catch (e) { /* read-only on some loaders */ }
+                    try { window.define.amd = undefined; } catch (e) { /* ignore */ }
                 }
                 var restore = function () {
                     if (hadAmd && window.define) {
@@ -109,6 +139,169 @@ $first    = $slides[0] ?? null;
             });
             window.__panthHeroSplideLoading.then(mountSlider);
         };
+
+        var loadSplideAndMount = function () {
+            if (typeof window.Splide !== 'undefined') { mountSlider(); return; }
+
+            var hasRequire = typeof window.require === 'function'
+                && typeof window.define === 'function'
+                && window.define.amd;
+
+            if (!hasRequire) {
+                fallbackToScriptTag();
+                return;
+            }
+
+            try {
+                window.require.config({
+                    paths: {
+                        // strip `.js` — RequireJS appends it automatically
+                        'panthHeroSplide': SPLIDE_JS_URL.replace(/\.js$/, '')
+                    }
+                });
+                window.require(['panthHeroSplide'], function (mod) {
+                    // Splide's UMD shape (verified from the bundled
+                    // source): `define(t)` where `t` is the factory's
+                    // return value — i.e. the Splide constructor itself
+                    // with `.defaults` and `.STATES` attached as static
+                    // props. So the module value IS the constructor.
+                    if (typeof mod === 'function') {
+                        window.Splide = mod;
+                    } else if (mod && typeof mod.Splide === 'function') {
+                        // Belt-and-braces — handle a future bundler change.
+                        window.Splide = mod.Splide;
+                    }
+                    if (typeof window.Splide === 'undefined') {
+                        if (window.console && console.warn) {
+                            console.warn('panth-hero: AMD load returned no Splide, falling back', mod);
+                        }
+                        fallbackToScriptTag();
+                        return;
+                    }
+                    mountSlider();
+                }, function (err) {
+                    if (window.console && console.warn) {
+                        console.warn('panth-hero: AMD load errored, falling back to script tag', err);
+                    }
+                    fallbackToScriptTag();
+                });
+            } catch (e) {
+                if (window.console && console.warn) {
+                    console.warn('panth-hero: require.config threw, falling back', e);
+                }
+                fallbackToScriptTag();
+            }
+        };
+
+        // -------- Tracking --------------------------------------------
+        // FPC-safe: no form_key, no auth state, sendBeacon only — never
+        // blocks navigation. Views deduped per-session-per-slide via
+        // sessionStorage. Click events fire on capture so the beacon
+        // queues before the browser starts the navigation.
+        var wireTracking = function () {
+            if (rootEl.dataset.track !== '1') return;
+
+            var endpoint = rootEl.dataset.trackUrl;
+            if (!endpoint) return;
+
+            var deviceType = function () {
+                var w = window.innerWidth || document.documentElement.clientWidth;
+                if (w < 768)  return 'mobile';
+                if (w < 1025) return 'tablet';
+                return 'desktop';
+            };
+
+            var post = function (slideId, type) {
+                if (!slideId || (type !== 'view' && type !== 'click')) return;
+                var payload = JSON.stringify({
+                    slide_id: slideId,
+                    type: type,
+                    device: deviceType()
+                });
+                try {
+                    if (navigator.sendBeacon) {
+                        var blob = new Blob([payload], { type: 'application/json' });
+                        navigator.sendBeacon(endpoint, blob);
+                        return;
+                    }
+                    fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: payload,
+                        keepalive: true,
+                        credentials: 'same-origin'
+                    }).catch(function () {});
+                } catch (e) { /* swallow */ }
+            };
+
+            // View tracking — dedup per session per slide.
+            var SS_KEY_PREFIX = 'panth_hero_v_';
+            var seenView = function (id) {
+                try {
+                    return sessionStorage.getItem(SS_KEY_PREFIX + id) === '1';
+                } catch (e) { return true; /* if storage blocked, never view-track */ }
+            };
+            var markView = function (id) {
+                try { sessionStorage.setItem(SS_KEY_PREFIX + id, '1'); } catch (e) {}
+            };
+
+            var slideEls = rootEl.querySelectorAll('[data-slide-id]');
+
+            // Click tracking — capture so beacon queues before navigation.
+            rootEl.addEventListener('click', function (ev) {
+                var a = ev.target.closest && ev.target.closest('.panth-hero__slide');
+                if (!a) return;
+                var li = a.closest('[data-slide-id]');
+                if (!li) return;
+                var id = parseInt(li.getAttribute('data-slide-id'), 10);
+                if (id) post(id, 'click');
+            }, true);
+
+            // Visibility (view) tracking via IntersectionObserver.
+            if (typeof IntersectionObserver !== 'undefined') {
+                var obs = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (!entry.isIntersecting) return;
+                        // Only count the active slide as a "view" — peeks
+                        // would otherwise inflate counts on a 3-up layout.
+                        var li = entry.target;
+                        if (!li.classList.contains('is-active')) return;
+                        var id = parseInt(li.getAttribute('data-slide-id'), 10);
+                        if (!id || seenView(id)) return;
+                        markView(id);
+                        post(id, 'view');
+                    });
+                }, { threshold: 0.5 });
+                slideEls.forEach(function (li) { obs.observe(li); });
+
+                // Splide mutates is-active on the same nodes — re-check
+                // every time it moves so we count post-rotation views.
+                rootEl.addEventListener('panth:slide-active', function () {
+                    slideEls.forEach(function (li) {
+                        if (!li.classList.contains('is-active')) return;
+                        var id = parseInt(li.getAttribute('data-slide-id'), 10);
+                        if (!id || seenView(id)) return;
+                        markView(id);
+                        post(id, 'view');
+                    });
+                });
+            } else {
+                // Old browsers — fire one view for the active slide on load.
+                var active = rootEl.querySelector('.is-active[data-slide-id]');
+                if (active) {
+                    var aid = parseInt(active.getAttribute('data-slide-id'), 10);
+                    if (aid && !seenView(aid)) { markView(aid); post(aid, 'view'); }
+                }
+            }
+        };
+
+        // Splide doesn't dispatch DOM CustomEvents by default, so we hook
+        // the `move` event from inside mountSlider via the API, but for
+        // simplicity we re-poll on transitionend events.
+        rootEl.addEventListener('transitionend', function () {
+            if (!rootEl.classList.contains('panth-hero--mounted')) return;
+            rootEl.dispatchEvent(new CustomEvent('panth:slide-active'));
+        });
 
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', loadSplideAndMount);

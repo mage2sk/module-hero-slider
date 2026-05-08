@@ -1,7 +1,35 @@
 {
+    "panth_hero_slider_slider": {
+        "column": {
+            "slider_id": true,
+            "identifier": true,
+            "name": true,
+            "is_active": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_HERO_SLIDER_SLIDER_IDENT": true
+        }
+    },
+    "panth_hero_slider_slider_store": {
+        "column": {
+            "slider_id": true,
+            "store_id": true
+        },
+        "index": {
+            "PANTH_HERO_SLIDER_SLIDER_STORE_STORE": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_HERO_SLIDER_SLIDER_STORE_SLIDER": true
+        }
+    },
     "panth_hero_slider_slide": {
         "column": {
             "entity_id": true,
+            "slider_id": true,
             "title": true,
             "link_url": true,
             "button_label": true,
@@ -16,10 +44,32 @@
             "updated_at": true
         },
         "index": {
-            "PANTH_HERO_SLIDER_SLIDE_IS_ACTIVE_SORT_ORDER": true
+            "PANTH_HERO_SLIDER_SLIDE_IS_ACTIVE_SORT_ORDER": true,
+            "PANTH_HERO_SLIDER_SLIDE_SLIDER_ID": true
         },
         "constraint": {
-            "PRIMARY": true
+            "PRIMARY": true,
+            "PANTH_HERO_SLIDER_SLIDE_SLIDER": true
+        }
+    },
+    "panth_hero_slider_stat": {
+        "column": {
+            "stat_id": true,
+            "slide_id": true,
+            "event_date": true,
+            "store_id": true,
+            "event_type": true,
+            "device_type": true,
+            "event_count": true
+        },
+        "index": {
+            "PANTH_HERO_SLIDER_STAT_DATE": true,
+            "PANTH_HERO_SLIDER_STAT_SLIDE_DATE": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_HERO_SLIDER_STAT_BUCKET": true,
+            "PANTH_HERO_SLIDER_STAT_SLIDE": true
         }
     }
 }

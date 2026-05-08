@@ -32,4 +32,10 @@ class Collection extends AbstractCollection
         $this->setOrder('entity_id', self::SORT_ORDER_ASC);
         return $this;
     }
+
+    public function addSliderFilter(int $sliderId): self
+    {
+        $this->addFieldToFilter('slider_id', $sliderId);
+        return $this;
+    }
 }

@@ -5,6 +5,10 @@
     <body>
         <referenceContainer name="content">
             <uiComponent name="panth_heroslider_slide_form"/>
+            <block class="Panth\HeroSlider\Block\Adminhtml\Slide\Edit\AnalyticsHtml"
+                   name="panth_heroslider.slide.analytics"
+                   template="Panth_HeroSlider::slide/analytics.phtml"
+                   after="-"/>
         </referenceContainer>
     </body>
 </page>

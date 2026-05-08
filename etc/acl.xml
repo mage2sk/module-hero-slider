@@ -5,9 +5,13 @@
         <resources>
             <resource id="Magento_Backend::admin">
                 <resource id="Magento_Backend::content">
-                    <resource id="Panth_HeroSlider::slides" title="Hero Slider" sortOrder="20">
-                        <resource id="Panth_HeroSlider::slide_save" title="Save Slides"/>
-                        <resource id="Panth_HeroSlider::slide_delete" title="Delete Slides"/>
+                    <resource id="Panth_HeroSlider::sliders" title="Hero Sliders" sortOrder="20">
+                        <resource id="Panth_HeroSlider::slider_save" title="Save Sliders"/>
+                        <resource id="Panth_HeroSlider::slider_delete" title="Delete Sliders"/>
+                        <resource id="Panth_HeroSlider::slides" title="Hero Slides">
+                            <resource id="Panth_HeroSlider::slide_save" title="Save Slides"/>
+                            <resource id="Panth_HeroSlider::slide_delete" title="Delete Slides"/>
+                        </resource>
                     </resource>
                 </resource>
                 <resource id="Magento_Backend::stores">

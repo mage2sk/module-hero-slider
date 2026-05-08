@@ -5,5 +5,8 @@
         <job name="panth_heroslider_send_heartbeat" instance="Panth\HeroSlider\Cron\SendHeartbeat" method="execute">
             <schedule>51 4 * * *</schedule>
         </job>
+        <job name="panth_heroslider_prune_stats" instance="Panth\HeroSlider\Cron\PruneStats" method="execute">
+            <schedule>23 3 * * *</schedule>
+        </job>
     </group>
 </config>

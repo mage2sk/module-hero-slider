@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+    <widget id="panth_heroslider_widget"
+            class="Panth\HeroSlider\Block\Widget\Slider"
+            placeholder_image="Panth_HeroSlider::images/widget-placeholder.svg"
+            ttl="0">
+        <label translate="true">Panth Hero Slider</label>
+        <description translate="true">Drop a Panth Hero Slider anywhere — homepage, CMS pages, category pages, products. Pick a slider by its identifier.</description>
+        <parameters>
+            <parameter name="slider_identifier" xsi:type="text" required="true"
+                       visible="true" sort_order="10">
+                <label translate="true">Slider Identifier</label>
+                <description translate="true">The slider's identifier (e.g. homepage_hero). Find it on Content → Panth Infotech → Hero Slider → Manage Sliders.</description>
+            </parameter>
+        </parameters>
+    </widget>
+</widgets>

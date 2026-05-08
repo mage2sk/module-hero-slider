@@ -12,6 +12,10 @@
                 <mobile_breakpoint>1025</mobile_breakpoint>
                 <auto_inject_homepage>1</auto_inject_homepage>
             </general>
+            <analytics>
+                <enabled>1</enabled>
+                <retention_days>365</retention_days>
+            </analytics>
         </panth_heroslider>
     </default>
 </config>

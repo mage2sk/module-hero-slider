@@ -9,6 +9,7 @@ namespace Panth\HeroSlider\Api\Data;
 interface SlideInterface
 {
     public const ENTITY_ID         = 'entity_id';
+    public const SLIDER_ID         = 'slider_id';
     public const TITLE             = 'title';
     public const LINK_URL          = 'link_url';
     public const BUTTON_LABEL      = 'button_label';
@@ -24,6 +25,9 @@ interface SlideInterface
 
     public function getId();
     public function setId($id);
+
+    public function getSliderId(): ?int;
+    public function setSliderId(?int $sliderId): self;
 
     public function getTitle(): ?string;
     public function setTitle(?string $title): self;

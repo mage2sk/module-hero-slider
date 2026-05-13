@@ -46,5 +46,5 @@ class Collection extends SliderCollection implements SearchResultInterface
     public function setSearchCriteria(?\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria = null) { return $this; }
     public function getTotalCount() { return $this->getSize(); }
     public function setTotalCount($totalCount) { return $this; }
-    public function setItems(array $items = null) { return $this; }
+    public function setItems(?array $items = null) { return $this; }
 }

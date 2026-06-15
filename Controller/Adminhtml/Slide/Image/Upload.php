@@ -10,6 +10,7 @@ use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Panth\HeroSlider\Model\ImageUploader;
+use Panth\Core\Security\UploadExtensionPolicy;
 
 class Upload extends Action
 {
@@ -18,7 +19,8 @@ class Upload extends Action
     public function __construct(
         Context $context,
         private readonly ImageUploader $imageUploader,
-        private readonly JsonFactory $resultJsonFactory
+        private readonly JsonFactory $resultJsonFactory,
+        private readonly UploadExtensionPolicy $uploadExtensionPolicy
     ) {
         parent::__construct($context);
     }
@@ -28,6 +30,13 @@ class Upload extends Action
         $resultJson = $this->resultJsonFactory->create();
         try {
             $param = $this->getRequest()->getParam('param', 'image_desktop');
+
+            // Hard executable deny-list — defense-in-depth on top of the
+            // ImageUploader's own allowlist.
+            if (isset($_FILES[$param]['name']) && is_string($_FILES[$param]['name'])) {
+                $this->uploadExtensionPolicy->assertSafeExtension($_FILES[$param]['name']);
+            }
+
             $result = $this->imageUploader->saveFileToTmpDir((string)$param);
             $result['cookie'] = [
                 'name'     => $this->_session->getName(),

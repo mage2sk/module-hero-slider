@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.6 - Upload extension deny-list (defense-in-depth)
+
+- `Controller/Adminhtml/Slide/Image/Upload` now calls
+  `Panth\Core\Security\UploadExtensionPolicy::assertSafeExtension()` before
+  `saveFileToTmpDir()` — a hard executable deny-list independent of the
+  ImageUploader allowlist. Admin-gated, defense-in-depth. Requires
+  `mage2kishan/module-core ^1.0.17`.
+
 ## 1.0.4 - 2026-05-13
 
 - Fix the remaining PHP 8.4 implicit-nullable deprecation in `setItems()` on both grid collections (`Slider\Grid\Collection` and `Slide\Grid\Collection`). Parameter `$items` is now explicitly typed as `?array`. The 1.0.3 patch fixed `setSearchCriteria()` but missed the matching `setItems()` method directly below it, which Magento exercises through a separate code path (`cache:flush`) and would still trigger a fatal exception on Magento 2.4.9 / PHP 8.4 with default error reporting.

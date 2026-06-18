@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.7 - README rewrite
+
+- Rewrote README to match the standard Panth Infotech template: added Quick Answer block, full Configuration table sourced from system.xml, Analytics section, Placing a Slider section, FAQ, Support table, Quick Links table, and SEO keywords. Canonical URL updated to the live product page.
+
 ## 1.0.6 - Upload extension deny-list (defense-in-depth)
 
 - `Controller/Adminhtml/Slide/Image/Upload` now calls

@@ -1,7 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Controller\Adminhtml\Slider;
@@ -53,9 +50,7 @@ class Save extends Action
             if (is_string($rawStoreIds)) {
                 $rawStoreIds = explode(',', $rawStoreIds);
             }
-            // Keep ANY non-empty submitted value (including string "0"),
-            // then cast to int. Don't filter out 0 — it represents the
-            // "All Store Views" option and is a valid selection.
+
             $storeIds = [];
             foreach ((array)$rawStoreIds as $v) {
                 if ($v === '' || $v === null) {

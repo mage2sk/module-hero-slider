@@ -1,12 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- *
- * Atomic counter for view + click events on hero slides. Uses
- * INSERT ... ON DUPLICATE KEY UPDATE so concurrent web requests can
- * increment the same (slide, date, store, event_type, device_type)
- * bucket without row locks.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Model;
@@ -36,10 +28,6 @@ class StatTracker
     ) {
     }
 
-    /**
-     * Increment a single bucket. Returns true on success, false on
-     * silent error (logged).
-     */
     public function track(int $slideId, string $eventType, string $deviceType, ?int $storeId = null): bool
     {
         if ($slideId <= 0) {
@@ -71,12 +59,6 @@ class StatTracker
         }
     }
 
-    /**
-     * Aggregate totals for a set of slides over a given date window.
-     *
-     * @param int[] $slideIds
-     * @return array<int, array{views:int, clicks:int}> keyed by slide_id
-     */
     public function getTotals(array $slideIds, int $daysBack = 30, ?int $storeId = null): array
     {
         $result = [];
@@ -121,12 +103,6 @@ class StatTracker
         return $result;
     }
 
-    /**
-     * Per-device breakdown for one slide over the last $daysBack days.
-     *
-     * @return array<string, array{views:int, clicks:int}> keyed by
-     *         device_type (desktop|tablet|mobile)
-     */
     public function getDeviceBreakdown(int $slideId, int $daysBack = 30, ?int $storeId = null): array
     {
         $result = [
@@ -173,15 +149,10 @@ class StatTracker
         return $result;
     }
 
-    /**
-     * Daily timeline for sparkline rendering.
-     *
-     * @return array<int, array{date:string, views:int, clicks:int}>
-     */
     public function getTimeline(int $slideId, int $daysBack = 30, ?int $storeId = null): array
     {
         $timeline = [];
-        // Pre-fill all dates so the chart has continuous x-axis.
+
         for ($i = $daysBack - 1; $i >= 0; $i--) {
             $d = gmdate('Y-m-d', strtotime("-{$i} days"));
             $timeline[$d] = ['date' => $d, 'views' => 0, 'clicks' => 0];
@@ -224,9 +195,6 @@ class StatTracker
         return array_values($timeline);
     }
 
-    /**
-     * Drop daily aggregates older than $daysToKeep. Cron-driven.
-     */
     public function pruneOlderThan(int $daysToKeep): int
     {
         try {

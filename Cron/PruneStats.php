@@ -1,11 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- *
- * Daily prune of `panth_hero_slider_stat` rows older than the configured
- * retention window (default 365 days). Keeps the table compact long-term
- * without burdening admin SQL.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Cron;

@@ -1,11 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- *
- * Renders the list of store views each slider is assigned to as a
- * comma-separated label. Stats are batched in a single SQL query across
- * all sliders on the current page — no N+1.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Ui\Component\Listing\Column;
@@ -47,10 +40,6 @@ class SliderStores extends Column
         return $dataSource;
     }
 
-    /**
-     * @param int[] $sliderIds
-     * @return array<int, int[]>
-     */
     private function fetchLinks(array $sliderIds): array
     {
         if (!$sliderIds) {
@@ -71,9 +60,6 @@ class SliderStores extends Column
         return $out;
     }
 
-    /**
-     * @param int[] $storeIds
-     */
     private function labelFor(array $storeIds): string
     {
         if (!$storeIds) {

@@ -1,10 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- *
- * Renders the analytics panel inside the slide edit page. Pulls totals,
- * per-device breakdown, and a 30-day timeline for sparkline rendering.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Block\Adminhtml\Slide\Edit;
@@ -35,9 +29,6 @@ class AnalyticsHtml extends Template
         return $this->getSlideId() === 0;
     }
 
-    /**
-     * @return array{views:int, clicks:int}
-     */
     public function getTotals(int $days = 30): array
     {
         $id = $this->getSlideId();
@@ -48,17 +39,11 @@ class AnalyticsHtml extends Template
         return $totals[$id] ?? ['views' => 0, 'clicks' => 0];
     }
 
-    /**
-     * @return array<string, array{views:int, clicks:int}>
-     */
     public function getDeviceBreakdown(int $days = 30): array
     {
         return $this->tracker->getDeviceBreakdown($this->getSlideId(), $days);
     }
 
-    /**
-     * @return array<int, array{date:string, views:int, clicks:int}>
-     */
     public function getTimeline(int $days = 30): array
     {
         return $this->tracker->getTimeline($this->getSlideId(), $days);

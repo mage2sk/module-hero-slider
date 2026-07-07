@@ -1,7 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Model\Slider;
@@ -13,7 +10,6 @@ use Panth\HeroSlider\Model\ResourceModel\Slider\CollectionFactory;
 
 class DataProvider extends AbstractDataProvider
 {
-    /** @var array<int|string,array> */
     protected $loadedData;
 
     public function __construct(
@@ -38,12 +34,7 @@ class DataProvider extends AbstractDataProvider
         $this->loadedData = [];
         foreach ($this->collection->getItems() as $slider) {
             $row = $slider->getData();
-            // Collection iteration does NOT call ResourceModel::_afterLoad,
-            // so store_ids must be populated explicitly. Cast to STRING:
-            // Magento_Cms's store-options source returns option values as
-            // strings, and Magento UI multiselect uses strict equality
-            // (`===`) for pre-selection — an int [0] won't match a
-            // string "0" and the field renders as if nothing is selected.
+
             $row['store_ids'] = array_map(
                 'strval',
                 $this->sliderResource->lookupStoreIds((int)$slider->getId())

@@ -1,7 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Model\ResourceModel\Slider\Grid;
@@ -17,7 +14,6 @@ use Psr\Log\LoggerInterface;
 
 class Collection extends SliderCollection implements SearchResultInterface
 {
-    /** @var AggregationInterface */
     protected $aggregations;
 
     public function __construct(

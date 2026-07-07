@@ -1,31 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- *
- * Frontend tracking endpoint. Accepts POST { slide_id, type, device }
- * and increments the daily stat bucket.
- *
- * CSRF protection is INTENTIONALLY bypassed via CsrfAwareActionInterface
- * because:
- *   1. Tracking events are sent from FPC-cached pages — those pages don't
- *      have a fresh form_key per visitor and we don't want to trigger
- *      cache misses just to mint a token.
- *   2. The endpoint accepts only whitelisted slide IDs (must exist + be
- *      active) and whitelisted event/device strings; an attacker who
- *      forges requests can at most inflate counters for slides that are
- *      already visible to them, with no read access and no privilege
- *      escalation.
- *   3. The endpoint never reads / writes session, customer, or order
- *      data — it touches a single counter table and nothing else.
- *
- * Defence-in-depth still in place:
- *   - POST-only (HttpPostActionInterface).
- *   - Strict input validation: int slide_id, enum event_type, enum
- *     device_type. Anything outside the allowlist returns 204 with no
- *     write.
- *   - Existence check: slide_id must resolve to an active row.
- *   - Atomic UPSERT in the tracker so race-conditions can't corrupt rows.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Controller\Track;
@@ -97,9 +70,6 @@ class Event implements HttpPostActionInterface, CsrfAwareActionInterface
 
     public function validateForCsrf(RequestInterface $request): ?bool
     {
-        // Tracking endpoint — input is strictly validated and writes only
-        // to a single counter row, no PII or auth-bound state. See class
-        // docblock for the full security argument.
         return true;
     }
 }

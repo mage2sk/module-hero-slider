@@ -1,7 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Controller\Adminhtml\Slide;
@@ -42,9 +39,6 @@ class Save extends Action
                 ? $this->slideRepository->getById($id)
                 : $this->slideFactory->create();
 
-            // Image fields arrive as either a string path (existing) or an
-            // array from the file uploader. We collapse to the relative path
-            // and move tmp uploads into their final dir.
             foreach (['image_desktop', 'image_mobile'] as $field) {
                 $value = $data[$field] ?? null;
                 if (is_array($value)) {
@@ -54,7 +48,7 @@ class Save extends Action
                         $first = reset($value);
                         if (!empty($first['name'])) {
                             $name = $first['name'];
-                            // tmp-uploaded file: move to permanent dir
+
                             if (!empty($first['tmp_name'])) {
                                 $this->imageUploader->moveFileFromTmp($name);
                             }
@@ -66,7 +60,6 @@ class Save extends Action
                 }
             }
 
-            // Sanitise empties + booleans
             foreach (['button_label', 'button_bg_color', 'button_text_color', 'image_alt', 'link_url', 'image_mobile'] as $maybeNull) {
                 if (isset($data[$maybeNull]) && $data[$maybeNull] === '') {
                     $data[$maybeNull] = null;

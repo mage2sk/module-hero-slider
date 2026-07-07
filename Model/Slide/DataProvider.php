@@ -1,7 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Model\Slide;
@@ -16,7 +13,6 @@ use Panth\HeroSlider\Model\ResourceModel\Slide\CollectionFactory;
 
 class DataProvider extends AbstractDataProvider
 {
-    /** @var array<int|string,array> */
     protected $loadedData;
 
     public function __construct(

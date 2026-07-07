@@ -1,11 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- *
- * Listing column that injects views, clicks and CTR per slide for the
- * trailing 30-day window. The stats come from a SINGLE batched query
- * across all slide IDs on the current page — no N+1.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Ui\Component\Listing\Column;
@@ -17,7 +10,6 @@ use Panth\HeroSlider\Model\StatTracker;
 
 class StatColumn extends Column
 {
-    /** @var array<int, array{views:int, clicks:int}>|null */
     private ?array $statsCache = null;
 
     public function __construct(
@@ -40,8 +32,7 @@ class StatColumn extends Column
         $stats = $this->fetchStats($ids);
 
         $field = (string)$this->getData('name');
-        // The column XML drives WHICH metric this instance renders via
-        // a `metric` attribute on data — value is one of: views, clicks, ctr.
+
         $metric = (string)$this->getData('config/metric') ?: 'views';
 
         foreach ($items as &$row) {
@@ -66,10 +57,6 @@ class StatColumn extends Column
         return $dataSource;
     }
 
-    /**
-     * @param int[] $ids
-     * @return array<int, array{views:int, clicks:int}>
-     */
     private function fetchStats(array $ids): array
     {
         if ($this->statsCache !== null) {

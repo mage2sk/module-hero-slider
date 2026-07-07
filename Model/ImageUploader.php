@@ -1,11 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- *
- * Image uploader for slide artwork. Stores files under:
- *   pub/media/panth/heroslider/slide/{file}
- * with the standard tmp → final pattern Magento uses for CMS blocks.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Model;
@@ -85,7 +78,6 @@ class ImageUploader
     {
         $baseTmpPath = $this->getBaseTmpPath();
 
-        /** @var Uploader $uploader */
         $uploader = $this->uploaderFactory->create(['fileId' => $fileId]);
         $uploader->setAllowedExtensions($this->getAllowedExtensions());
         $uploader->setAllowRenameFiles(true);

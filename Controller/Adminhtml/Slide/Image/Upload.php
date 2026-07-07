@@ -1,7 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Controller\Adminhtml\Slide\Image;
@@ -31,8 +28,6 @@ class Upload extends Action
         try {
             $param = $this->getRequest()->getParam('param', 'image_desktop');
 
-            // Hard executable deny-list — defense-in-depth on top of the
-            // ImageUploader's own allowlist.
             if (isset($_FILES[$param]['name']) && is_string($_FILES[$param]['name'])) {
                 $this->uploadExtensionPolicy->assertSafeExtension($_FILES[$param]['name']);
             }

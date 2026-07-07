@@ -1,9 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- *
- * Source model that powers the "Slider" dropdown on the slide form.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Model\Source;

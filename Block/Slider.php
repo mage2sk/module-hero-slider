@@ -1,7 +1,4 @@
 <?php
-/**
- * Copyright © Panth Infotech. All rights reserved.
- */
 declare(strict_types=1);
 
 namespace Panth\HeroSlider\Block;
@@ -34,15 +31,6 @@ class Slider extends Template
         parent::__construct($context, $data);
     }
 
-    /**
-     * Resolve which slider to render. Source precedence:
-     *   1. Explicit `slider_id` block argument
-     *   2. `slider_identifier` block argument (widget / layout XML)
-     *   3. Falls back to `homepage_hero` for the default-injected block
-     *
-     * Always filtered by current store via `Slider::getIdByIdentifier()`
-     * so a slider not assigned to the active store renders nothing.
-     */
     public function getResolvedSliderId(): int
     {
         if ($this->resolvedSliderIdCache !== null) {
@@ -63,7 +51,6 @@ class Slider extends Template
         return $this->heroConfig->isEnabled() && count($this->getSlides()) > 0;
     }
 
-    /** @return list<SlideInterface> */
     public function getSlides(): array
     {
         if ($this->slidesCache !== null) {
@@ -81,12 +68,6 @@ class Slider extends Template
         return $this->slidesCache;
     }
 
-    /**
-     * Deterministic ID derived from the block name + active slide IDs.
-     * Stable across FPC cache hits AND across multiple instances on the
-     * same page (each instance gets a distinct hash because block names
-     * differ).
-     */
     public function getSliderId(): string
     {
         if ($this->sliderIdCache === null) {
@@ -148,11 +129,6 @@ class Slider extends Template
         return (string)($slide->getLinkUrl() ?: '#');
     }
 
-    /**
-     * Splide config for the slider — returned as JSON for inline init.
-     *
-     * @return array<string,mixed>
-     */
     public function getSplideConfig(): array
     {
         return [
@@ -164,10 +140,7 @@ class Slider extends Template
             'pagination' => false,
             'arrows'     => $this->heroConfig->showArrows(),
             'breakpoints' => [
-                // At <= mobile-breakpoint: single full-width slide.
-                // We deliberately omit `focus: 'center'` here — combined with
-                // perPage:1 it nudges the active slide off-centre on mobile
-                // and leaks a sliver of the next slide on the trailing edge.
+
                 $this->heroConfig->getMobileBreakpoint() => [
                     'perPage'    => 1,
                     'pagination' => true,
@@ -203,13 +176,6 @@ class Slider extends Template
         return $this->_urlBuilder->getUrl('panth_heroslider/track/event');
     }
 
-    /**
-     * SEO: Schema.org ItemList of ImageObjects describing the slider.
-     * Inlined as JSON-LD so search engines can crawl the campaign images
-     * without executing the carousel script.
-     *
-     * @return array<string, mixed>
-     */
     public function getJsonLd(): array
     {
         $items = [];

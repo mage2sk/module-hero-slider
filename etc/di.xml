@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Panth\HeroSlider\Api\Data\SlideInterface"
+                type="Panth\HeroSlider\Model\Slide"/>
+    <preference for="Panth\HeroSlider\Api\SlideRepositoryInterface"
+                type="Panth\HeroSlider\Model\SlideRepository"/>
+    <preference for="Panth\HeroSlider\Api\Data\SliderInterface"
+                type="Panth\HeroSlider\Model\Slider"/>
+    <preference for="Panth\HeroSlider\Api\SliderRepositoryInterface"
+                type="Panth\HeroSlider\Model\SliderRepository"/>
+
+    <type name="Panth\HeroSlider\Model\ImageUploader">
+        <arguments>
+            <argument name="baseTmpPath" xsi:type="string">panth/heroslider/tmp/slide</argument>
+            <argument name="basePath" xsi:type="string">panth/heroslider/slide</argument>
+            <argument name="allowedExtensions" xsi:type="array">
+                <item name="jpg" xsi:type="string">jpg</item>
+                <item name="jpeg" xsi:type="string">jpeg</item>
+                <item name="gif" xsi:type="string">gif</item>
+                <item name="png" xsi:type="string">png</item>
+                <item name="webp" xsi:type="string">webp</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="panth_heroslider_slide_listing_data_source" xsi:type="string">
+                    Panth\HeroSlider\Model\ResourceModel\Slide\Grid\Collection
+                </item>
+                <item name="panth_heroslider_slider_listing_data_source" xsi:type="string">
+                    Panth\HeroSlider\Model\ResourceModel\Slider\Grid\Collection
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Panth\HeroSlider\Model\ResourceModel\Slide\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">panth_hero_slider_slide</argument>
+            <argument name="resourceModel" xsi:type="string">Panth\HeroSlider\Model\ResourceModel\Slide</argument>
+            <argument name="eventPrefix" xsi:type="string">panth_heroslider_slide_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">slide_grid_collection</argument>
+        </arguments>
+    </type>
+
+    <type name="Panth\HeroSlider\Model\ResourceModel\Slider\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">panth_hero_slider_slider</argument>
+            <argument name="resourceModel" xsi:type="string">Panth\HeroSlider\Model\ResourceModel\Slider</argument>
+            <argument name="eventPrefix" xsi:type="string">panth_heroslider_slider_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">slider_grid_collection</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="Panth\HeroSlider\Ui\SlideGridFulltextFilter" type="Panth\HeroSlider\Ui\Component\Listing\LikeFulltextFilter">
+        <arguments>
+            <argument name="columns" xsi:type="array">
+                <item name="title" xsi:type="string">main_table.title</item>
+                <item name="button_label" xsi:type="string">main_table.button_label</item>
+                <item name="image_alt" xsi:type="string">main_table.image_alt</item>
+                <item name="link_url" xsi:type="string">main_table.link_url</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\HeroSlider\Ui\SlideGridFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool">
+        <arguments>
+            <argument name="appliers" xsi:type="array">
+                <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
+                <item name="fulltext" xsi:type="object">Panth\HeroSlider\Ui\SlideGridFulltextFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\HeroSlider\Ui\SlideGridReporting" type="Magento\Framework\View\Element\UiComponent\DataProvider\Reporting">
+        <arguments>
+            <argument name="filterPool" xsi:type="object">Panth\HeroSlider\Ui\SlideGridFilterPool</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\HeroSlider\Ui\SlideGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
+        <arguments>
+            <argument name="reporting" xsi:type="object">Panth\HeroSlider\Ui\SlideGridReporting</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Panth\HeroSlider\Ui\SliderGridFulltextFilter" type="Panth\HeroSlider\Ui\Component\Listing\LikeFulltextFilter">
+        <arguments>
+            <argument name="columns" xsi:type="array">
+                <item name="name" xsi:type="string">main_table.name</item>
+                <item name="identifier" xsi:type="string">main_table.identifier</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\HeroSlider\Ui\SliderGridFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool">
+        <arguments>
+            <argument name="appliers" xsi:type="array">
+                <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
+                <item name="fulltext" xsi:type="object">Panth\HeroSlider\Ui\SliderGridFulltextFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\HeroSlider\Ui\SliderGridReporting" type="Magento\Framework\View\Element\UiComponent\DataProvider\Reporting">
+        <arguments>
+            <argument name="filterPool" xsi:type="object">Panth\HeroSlider\Ui\SliderGridFilterPool</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\HeroSlider\Ui\SliderGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
+        <arguments>
+            <argument name="reporting" xsi:type="object">Panth\HeroSlider\Ui\SliderGridReporting</argument>
+        </arguments>
+    </virtualType>
+</config>

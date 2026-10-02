@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Panth\HeroSlider\Block\Slider"
+                   name="panth.heroslider.home"
+                   template="Panth_HeroSlider::slider.phtml"
+                   ifconfig="panth_heroslider/general/auto_inject_homepage"
+                   before="-">
+                <arguments>
+                    <argument name="slider_identifier" xsi:type="string">homepage_hero</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

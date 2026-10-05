@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="panth_heroslider_prune_stats" instance="Panth\HeroSlider\Cron\PruneStats" method="execute">
+            <schedule>23 3 * * *</schedule>
+        </job>
+    </group>
+</config>

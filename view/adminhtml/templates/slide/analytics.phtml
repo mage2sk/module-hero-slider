@@ -1,0 +1,147 @@
+<?php
+/**
+ * Copyright © Panth Infotech. All rights reserved.
+ *
+ * @var \Panth\HeroSlider\Block\Adminhtml\Slide\Edit\AnalyticsHtml $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+if ($block->isNewSlide()) {
+    return;
+}
+
+$totals30 = $block->getTotals(30);
+$totals7  = $block->getTotals(7);
+$ctr30    = $block->ctr($totals30['views'], $totals30['clicks']);
+$ctr7     = $block->ctr($totals7['views'], $totals7['clicks']);
+
+$breakdown = $block->getDeviceBreakdown(30);
+$timeline  = $block->getTimeline(30);
+
+$max = 1;
+foreach ($timeline as $row) {
+    $max = max($max, $row['views'], $row['clicks']);
+}
+$buildPath = static function (array $timeline, string $key, int $max, int $w, int $h): string {
+    $count = count($timeline);
+    if ($count < 2) {
+        return '';
+    }
+    $points = [];
+    foreach ($timeline as $i => $row) {
+        $x = round($i * ($w / ($count - 1)), 2);
+        $y = round($h - ($row[$key] / $max) * $h, 2);
+        $points[] = $x . ',' . $y;
+    }
+    return implode(' ', $points);
+};
+$viewsLine  = $buildPath($timeline, 'views', $max, 600, 160);
+$clicksLine = $buildPath($timeline, 'clicks', $max, 600, 160);
+
+// Minimal structural inline styles only - no theme overrides, so this
+// renders consistently across Luma admin / Hyvä admin / future themes.
+$tableStyle = 'width:100%;border-collapse:collapse;table-layout:auto;';
+$cellStyle  = 'padding:10px 12px;border-bottom:1px solid #e3e3e3;text-align:left;vertical-align:middle;';
+$headStyle  = $cellStyle . 'background:#f5f5f5;font-weight:600;color:#303030;';
+$numStyle   = $cellStyle . 'text-align:right;font-variant-numeric:tabular-nums;';
+$numHead    = $headStyle . 'text-align:right;';
+?>
+<div class="admin__page-section">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $escaper->escapeHtml(__('Performance')) ?></span>
+        <span style="margin-left:10px;font-size:13px;color:#666;"><?= $escaper->escapeHtml(__('Last 30 days')) ?></span>
+    </div>
+    <div class="admin__page-section-content">
+        <table style="<?= $escaper->escapeHtmlAttr($tableStyle) ?>">
+            <thead>
+                <tr>
+                    <th style="<?= $escaper->escapeHtmlAttr($headStyle) ?>"><?= $escaper->escapeHtml(__('Metric')) ?></th>
+                    <th style="<?= $escaper->escapeHtmlAttr($numHead) ?>"><?= $escaper->escapeHtml(__('Last 30 days')) ?></th>
+                    <th style="<?= $escaper->escapeHtmlAttr($numHead) ?>"><?= $escaper->escapeHtml(__('Last 7 days')) ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="<?= $escaper->escapeHtmlAttr($cellStyle) ?>"><?= $escaper->escapeHtml(__('Views')) ?></td>
+                    <td style="<?= $escaper->escapeHtmlAttr($numStyle) ?>"><?= (int)$totals30['views'] ?></td>
+                    <td style="<?= $escaper->escapeHtmlAttr($numStyle) ?>"><?= (int)$totals7['views'] ?></td>
+                </tr>
+                <tr>
+                    <td style="<?= $escaper->escapeHtmlAttr($cellStyle) ?>"><?= $escaper->escapeHtml(__('Clicks')) ?></td>
+                    <td style="<?= $escaper->escapeHtmlAttr($numStyle) ?>"><?= (int)$totals30['clicks'] ?></td>
+                    <td style="<?= $escaper->escapeHtmlAttr($numStyle) ?>"><?= (int)$totals7['clicks'] ?></td>
+                </tr>
+                <tr>
+                    <td style="<?= $escaper->escapeHtmlAttr($cellStyle) ?>"><?= $escaper->escapeHtml(__('CTR')) ?></td>
+                    <td style="<?= $escaper->escapeHtmlAttr($numStyle) ?>"><?= $escaper->escapeHtml($ctr30) ?></td>
+                    <td style="<?= $escaper->escapeHtmlAttr($numStyle) ?>"><?= $escaper->escapeHtml($ctr7) ?></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="admin__page-section-title">
+        <span class="title"><?= $escaper->escapeHtml(__('By device')) ?></span>
+        <span style="margin-left:10px;font-size:13px;color:#666;"><?= $escaper->escapeHtml(__('Last 30 days')) ?></span>
+    </div>
+    <div class="admin__page-section-content">
+        <table style="<?= $escaper->escapeHtmlAttr($tableStyle) ?>">
+            <thead>
+                <tr>
+                    <th style="<?= $escaper->escapeHtmlAttr($headStyle) ?>"><?= $escaper->escapeHtml(__('Device')) ?></th>
+                    <th style="<?= $escaper->escapeHtmlAttr($numHead) ?>"><?= $escaper->escapeHtml(__('Views')) ?></th>
+                    <th style="<?= $escaper->escapeHtmlAttr($numHead) ?>"><?= $escaper->escapeHtml(__('Clicks')) ?></th>
+                    <th style="<?= $escaper->escapeHtmlAttr($numHead) ?>"><?= $escaper->escapeHtml(__('CTR')) ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($breakdown as $device => $row): ?>
+                    <tr>
+                        <td style="<?= $escaper->escapeHtmlAttr($cellStyle) ?>"><?= $escaper->escapeHtml($block->deviceLabel($device)) ?></td>
+                        <td style="<?= $escaper->escapeHtmlAttr($numStyle) ?>"><?= (int)$row['views'] ?></td>
+                        <td style="<?= $escaper->escapeHtmlAttr($numStyle) ?>"><?= (int)$row['clicks'] ?></td>
+                        <td style="<?= $escaper->escapeHtmlAttr($numStyle) ?>"><?= $escaper->escapeHtml($block->ctr($row['views'], $row['clicks'])) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <?php if ($viewsLine !== '' || $clicksLine !== ''): ?>
+        <div class="admin__page-section-title">
+        <span class="title"><?= $escaper->escapeHtml(__('Daily trend')) ?></span>
+        <span style="margin-left:10px;font-size:13px;color:#666;"><?= $escaper->escapeHtml(__('Last 30 days')) ?></span>
+    </div>
+        <div class="admin__page-section-content">
+            <div style="display:flex;gap:8px;align-items:stretch;">
+                <div style="display:flex;flex-direction:column;justify-content:space-between;font-size:12px;color:#666;text-align:right;min-width:32px;padding:2px 0;">
+                    <span><?= (int)$max ?></span>
+                    <span><?= (int)round($max / 2) ?></span>
+                    <span>0</span>
+                </div>
+                <svg viewBox="0 0 600 160" preserveAspectRatio="none"
+                     style="flex:1;width:100%;height:160px;display:block;border:1px solid #e3e3e3;background:#fff;"
+                     role="img" aria-label="<?= $escaper->escapeHtmlAttr(__('Daily views and clicks, last 30 days')) ?>">
+                    <line x1="0" y1="80" x2="600" y2="80" stroke="#eeeeee" stroke-width="1"/>
+                    <?php if ($viewsLine !== ''): ?>
+                        <polyline points="<?= $escaper->escapeHtmlAttr($viewsLine) ?>"
+                                  fill="none" stroke="#1979c3" stroke-width="2" vector-effect="non-scaling-stroke"/>
+                    <?php endif; ?>
+                    <?php if ($clicksLine !== ''): ?>
+                        <polyline points="<?= $escaper->escapeHtmlAttr($clicksLine) ?>"
+                                  fill="none" stroke="#eb5202" stroke-width="2" vector-effect="non-scaling-stroke"/>
+                    <?php endif; ?>
+                </svg>
+            </div>
+            <?php $firstDay = reset($timeline); $lastDay = end($timeline); ?>
+            <div style="display:flex;justify-content:space-between;margin-left:40px;font-size:12px;color:#666;padding-top:4px;">
+                <span><?= $escaper->escapeHtml((string)($firstDay['date'] ?? $firstDay['day'] ?? '')) ?></span>
+                <span><?= $escaper->escapeHtml((string)($lastDay['date'] ?? $lastDay['day'] ?? '')) ?></span>
+            </div>
+            <div style="padding-top:8px;font-size:13px;color:#41362f;">
+                <span style="display:inline-block;width:10px;height:10px;background:#1979c3;border-radius:999px;margin-right:6px;vertical-align:middle;"></span><?= $escaper->escapeHtml(__('Views')) ?>
+                <span style="display:inline-block;width:10px;height:10px;background:#eb5202;border-radius:999px;margin:0 6px 0 16px;vertical-align:middle;"></span><?= $escaper->escapeHtml(__('Clicks')) ?>
+            </div>
+        </div>
+    <?php endif; ?>
+</div>

@@ -1,0 +1,289 @@
+<?php
+/**
+ * Copyright (c) Panth Infotech. All rights reserved.
+ *
+ * @var \Panth\HeroSlider\Block\Slider $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+if (!$block->isEnabled()) {
+    return;
+}
+
+$sliderId = $block->getSliderId();
+$slides   = $block->getSlides();
+$first    = $slides[0] ?? null;
+$tracking = $block->isAnalyticsEnabled();
+$single   = $block->isSingleSlide();
+?>
+<link rel="stylesheet" href="<?= $escaper->escapeUrl($block->getSplideCssUrl()) ?>">
+<script type="application/ld+json"><?= /* @noEscape */ $block->getJsonLdJson() ?></script>
+
+<div class="panth-hero"
+     id="<?= $escaper->escapeHtmlAttr($sliderId) ?>"
+     role="region"
+     aria-roledescription="carousel"
+     aria-label="<?= $escaper->escapeHtmlAttr(__('Featured promotions')) ?>"
+     <?php if ($single): ?>data-single="1"<?php endif; ?>
+     data-track="<?= $tracking ? '1' : '0' ?>"
+     data-track-url="<?= $escaper->escapeUrl($block->getTrackEndpointUrl()) ?>">
+    <?php if ($first): ?>
+        <div class="panth-hero__lcp">
+            <a class="panth-hero__slide" href="<?= $escaper->escapeUrl($block->getLinkUrl($first)) ?>"
+               aria-label="<?= $escaper->escapeHtmlAttr($block->getAlt($first) ?: $first->getTitle()) ?>">
+                <span class="panth-hero__btn"
+                      style="background-color: <?= $escaper->escapeHtmlAttr($block->getButtonBg($first)) ?>; color: <?= $escaper->escapeHtmlAttr($block->getButtonColor($first)) ?>;">
+                    <?= $escaper->escapeHtml($block->getButtonLabel($first)) ?>
+                </span>
+                <picture>
+                    <source srcset="<?= $escaper->escapeUrl($block->getMobileSrc($first)) ?>" media="(max-width: 767px)">
+                    <img src="<?= $escaper->escapeUrl($block->getDesktopSrc($first)) ?>"
+                         alt="<?= $escaper->escapeHtmlAttr($block->getAlt($first)) ?>"
+                         width="706" height="390"
+                         decoding="async"
+                         fetchpriority="high"
+                         loading="eager">
+                </picture>
+            </a>
+        </div>
+    <?php endif; ?>
+
+    <div class="splide__track">
+        <ul class="splide__list">
+            <?php foreach ($slides as $index => $slide): ?>
+                <li class="splide__slide panth-hero__slide-wrap" data-slide-id="<?= (int)$slide->getId() ?>">
+                    <a class="panth-hero__slide" href="<?= $escaper->escapeUrl($block->getLinkUrl($slide)) ?>"
+                       aria-label="<?= $escaper->escapeHtmlAttr($block->getAlt($slide) ?: $slide->getTitle()) ?>">
+                        <span class="panth-hero__btn"
+                              style="background-color: <?= $escaper->escapeHtmlAttr($block->getButtonBg($slide)) ?>; color: <?= $escaper->escapeHtmlAttr($block->getButtonColor($slide)) ?>;">
+                            <?= $escaper->escapeHtml($block->getButtonLabel($slide)) ?>
+                        </span>
+                        <picture>
+                            <source srcset="<?= $escaper->escapeUrl($block->getMobileSrc($slide)) ?>" media="(max-width: 767px)">
+                            <img src="<?= $escaper->escapeUrl($block->getDesktopSrc($slide)) ?>"
+                                 alt="<?= $escaper->escapeHtmlAttr($block->getAlt($slide)) ?>"
+                                 width="706" height="390"
+                                 decoding="async"
+                                 <?php if ($index === 0): ?>fetchpriority="high" loading="eager"<?php else: ?>loading="lazy"<?php endif; ?>>
+                        </picture>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    <?php if ($block->hasAutoplayToggle()): ?>
+        <button type="button" class="splide__toggle panth-hero__toggle"
+                aria-label="<?= $escaper->escapeHtmlAttr(__('Pause autoplay')) ?>">
+            <svg class="panth-hero__toggle-play" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="panth-hero__toggle-pause" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+    <?php endif; ?>
+</div>
+
+<script>
+    'use strict';
+    (function () {
+        var SLIDER_ID    = <?= /* @noEscape */ json_encode($sliderId) ?>;
+        var SPLIDE_CONFIG = <?= /* @noEscape */ $block->getSplideConfigJson() ?>;
+        var SPLIDE_JS_URL = <?= /* @noEscape */ json_encode($block->getSplideJsUrl()) ?>;
+
+        var rootEl = document.getElementById(SLIDER_ID);
+        if (!rootEl) return;
+
+        var mountSlider = function () {
+            if (typeof window.Splide === 'undefined') return;
+            rootEl.classList.add('splide');
+            try {
+                new window.Splide('#' + SLIDER_ID, SPLIDE_CONFIG).mount();
+                rootEl.classList.add('panth-hero--mounted');
+                wireTracking();
+            } catch (e) {
+                if (window.console && console.warn) console.warn('panth-hero mount failed', e);
+            }
+        };
+
+        var fallbackToScriptTag = function () {
+            window.__panthHeroSplideLoading = window.__panthHeroSplideLoading || new Promise(function (resolve) {
+                var hadAmd = !!(window.define && window.define.amd);
+                var savedAmd = hadAmd ? window.define.amd : undefined;
+                if (hadAmd) {
+                    try { window.define.amd = undefined; } catch (e) { }
+                }
+                var restore = function () {
+                    if (hadAmd && window.define) {
+                        try { window.define.amd = savedAmd; } catch (e) { }
+                    }
+                };
+                var s = document.createElement('script');
+                s.src = SPLIDE_JS_URL;
+                s.async = true;
+                s.addEventListener('load',  function () { restore(); resolve(); });
+                s.addEventListener('error', function () { restore(); resolve(); });
+                document.head.appendChild(s);
+            });
+            window.__panthHeroSplideLoading.then(mountSlider);
+        };
+
+        var loadSplideAndMount = function () {
+            if (typeof window.Splide !== 'undefined') { mountSlider(); return; }
+
+            var hasRequire = typeof window.require === 'function'
+                && typeof window.define === 'function'
+                && window.define.amd;
+
+            if (!hasRequire) {
+                fallbackToScriptTag();
+                return;
+            }
+
+            try {
+                window.require.config({
+                    paths: {
+                        'panthHeroSplide': SPLIDE_JS_URL.replace(/\.js$/, '')
+                    }
+                });
+                window.require(['panthHeroSplide'], function (mod) {
+                    if (typeof mod === 'function') {
+                        window.Splide = mod;
+                    } else if (mod && typeof mod.Splide === 'function') {
+                        window.Splide = mod.Splide;
+                    }
+                    if (typeof window.Splide === 'undefined') {
+                        if (window.console && console.warn) {
+                            console.warn('panth-hero: AMD load returned no Splide, falling back', mod);
+                        }
+                        fallbackToScriptTag();
+                        return;
+                    }
+                    mountSlider();
+                }, function (err) {
+                    if (window.console && console.warn) {
+                        console.warn('panth-hero: AMD load errored, falling back to script tag', err);
+                    }
+                    fallbackToScriptTag();
+                });
+            } catch (e) {
+                if (window.console && console.warn) {
+                    console.warn('panth-hero: require.config threw, falling back', e);
+                }
+                fallbackToScriptTag();
+            }
+        };
+
+        var wireTracking = function () {
+            if (rootEl.dataset.track !== '1') return;
+
+            var endpoint = rootEl.dataset.trackUrl;
+            if (!endpoint) return;
+
+            var deviceType = function () {
+                var w = window.innerWidth || document.documentElement.clientWidth;
+                if (w < 768)  return 'mobile';
+                if (w < 1025) return 'tablet';
+                return 'desktop';
+            };
+
+            var formKey = function () {
+                if (window.hyva && typeof window.hyva.getFormKey === 'function') {
+                    return window.hyva.getFormKey();
+                }
+                var match = document.cookie.match(/(?:^|;\s*)form_key=([^;]+)/);
+                if (match) {
+                    return decodeURIComponent(match[1]);
+                }
+                var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                var key = '';
+                for (var i = 0; i < 16; i++) {
+                    key += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                document.cookie = 'form_key=' + key + '; path=/; SameSite=Lax'
+                    + (window.location.protocol === 'https:' ? '; secure' : '');
+                return key;
+            };
+
+            var post = function (slideId, type) {
+                if (!slideId || (type !== 'view' && type !== 'click')) return;
+                var payload = new URLSearchParams();
+                payload.append('slide_id', String(slideId));
+                payload.append('type', type);
+                payload.append('device', deviceType());
+                payload.append('form_key', formKey());
+                try {
+                    if (navigator.sendBeacon) {
+                        navigator.sendBeacon(endpoint, payload);
+                        return;
+                    }
+                    fetch(endpoint, {
+                        method: 'POST',
+                        body: payload,
+                        keepalive: true,
+                        credentials: 'same-origin'
+                    }).catch(function () {});
+                } catch (e) { }
+            };
+
+            var SS_KEY_PREFIX = 'panth_hero_v_';
+            var seenView = function (id) {
+                try {
+                    return sessionStorage.getItem(SS_KEY_PREFIX + id) === '1';
+                } catch (e) { return true; }
+            };
+            var markView = function (id) {
+                try { sessionStorage.setItem(SS_KEY_PREFIX + id, '1'); } catch (e) {}
+            };
+
+            var slideEls = rootEl.querySelectorAll('[data-slide-id]');
+
+            rootEl.addEventListener('click', function (ev) {
+                var a = ev.target.closest && ev.target.closest('.panth-hero__slide');
+                if (!a) return;
+                var li = a.closest('[data-slide-id]');
+                if (!li) return;
+                var id = parseInt(li.getAttribute('data-slide-id'), 10);
+                if (id) post(id, 'click');
+            }, true);
+
+            if (typeof IntersectionObserver !== 'undefined') {
+                var obs = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (!entry.isIntersecting) return;
+                        var li = entry.target;
+                        if (!li.classList.contains('is-active')) return;
+                        var id = parseInt(li.getAttribute('data-slide-id'), 10);
+                        if (!id || seenView(id)) return;
+                        markView(id);
+                        post(id, 'view');
+                    });
+                }, { threshold: 0.5 });
+                slideEls.forEach(function (li) { obs.observe(li); });
+
+                rootEl.addEventListener('panth:slide-active', function () {
+                    slideEls.forEach(function (li) {
+                        if (!li.classList.contains('is-active')) return;
+                        var id = parseInt(li.getAttribute('data-slide-id'), 10);
+                        if (!id || seenView(id)) return;
+                        markView(id);
+                        post(id, 'view');
+                    });
+                });
+            } else {
+                var active = rootEl.querySelector('.is-active[data-slide-id]');
+                if (active) {
+                    var aid = parseInt(active.getAttribute('data-slide-id'), 10);
+                    if (aid && !seenView(aid)) { markView(aid); post(aid, 'view'); }
+                }
+            }
+        };
+
+        rootEl.addEventListener('transitionend', function () {
+            if (!rootEl.classList.contains('panth-hero--mounted')) return;
+            rootEl.dispatchEvent(new CustomEvent('panth:slide-active'));
+        });
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadSplideAndMount);
+        } else {
+            loadSplideAndMount();
+        }
+    })();
+</script>

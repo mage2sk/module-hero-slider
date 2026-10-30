@@ -2,8 +2,8 @@
     "name": "mage2kishan/module-hero-slider",
     "description": "Hero / homepage carousel for Magento 2 (Hyva + Luma). Center-focused 3-up Splide.js slider with autoplay, per-slide button styling, and responsive desktop/mobile artwork. Ships its own copy of Splide 4.1.4 (MIT license included) - no CDN or theme dependency.",
     "type": "magento2-module",
-    "version": "1.1.5",
-    "license": "proprietary",
+    "version": "1.1.6",
+    "license": "MIT",
     "keywords": [
         "magento2",
         "magento2-module",
